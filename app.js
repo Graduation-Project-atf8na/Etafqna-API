@@ -3,6 +3,7 @@ const morgan = require('morgan');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
+const authRouter = require('./routes/authRoutes');
 const userRouter = require('./routes/userRoutes');
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // ROUTES
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
 
 // ERROR HANDLING MIDDLEWARE

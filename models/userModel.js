@@ -14,7 +14,18 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     validate: [validator.isEmail, 'Please provide a valid email']
   },
+  phone: {
+    type: String,
+    unique: true,
+    validate: [validator.isMobilePhone, 'Please provide a valid phone number']
+  },
   photo: String,
+  location: String,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false
+  },
   role: {
     type: String,
     enum: ['user', 'admin'],
@@ -57,7 +68,7 @@ userSchema.pre('save', async function (next) {
 userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
-  this.passwordChangedAt = Date.now() - 1000;
+  this.passwordChangedAt = Date.now() - 1000; // Subtract 1 second to make sure the token is always created after the password was changed
   next();
 });
 
@@ -74,6 +85,21 @@ userSchema.methods.correctPassword = async function (
   userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+// Instance method to check if user changed password after the token was issued
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  // False means NOT changed
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);
