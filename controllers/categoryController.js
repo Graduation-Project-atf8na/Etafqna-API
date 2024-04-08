@@ -5,15 +5,14 @@ const sharp = require('sharp');
 const { v4: uuidv4 } = require('uuid');
 // const asyncHandler = require('express-async-handler');
 
-// const catchAsync = require('../utils/catchAsync');
 const factory = require('./factoryHandler');
 const Category = require('../models/categoryModel');
+const { uploadSingleImage } = require('../utils/multer');
+const catchAsync = require('../utils/catchAsync');
 const {
   cloudinaryUploadImage,
   cloudinaryDeleteImage
 } = require('../utils/cloudinary');
-const { uploadSingleImage } = require('../utils/multer');
-const catchAsync = require('../utils/catchAsync');
 
 // @desc    Upload Category Image
 // @route   POST /api/v1/categories
