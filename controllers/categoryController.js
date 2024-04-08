@@ -1,48 +1,68 @@
-// const fs = require('fs');
+const fs = require('fs');
+const path = require('path');
 
-// const sharp = require('sharp');
-// const { v4: uuidv4 } = require('uuid');
+const sharp = require('sharp');
+const { v4: uuidv4 } = require('uuid');
 // const asyncHandler = require('express-async-handler');
 
 // const catchAsync = require('../utils/catchAsync');
 const factory = require('./factoryHandler');
 const Category = require('../models/categoryModel');
-// const upload = require('../middlewares/imageMiddleware');
+const {
+  cloudinaryUploadImage,
+  cloudinaryDeleteImage
+} = require('../utils/cloudinary');
+const { uploadSingleImage } = require('../utils/multer');
+const catchAsync = require('../utils/catchAsync');
 
 // @desc    Upload Category Image
 // @route   POST /api/v1/categories
 // @access  Private
-// exports.uploadCategoryImage = upload.uploadSingleImage('image');
+exports.uploadCategoryImage = uploadSingleImage('image');
 
 // // Image Processing
-// exports.resizeImage = asyncHandler(async (req, res, next) => {
-//   //1) if no file "IMAGE" is uploaded
-//   if (!req.file) return next();
+const fileName = `category-${uuidv4()}-${Date.now()}.jpeg`;
+const imagePath = path.join(__dirname, `../public/img/categories/${fileName}`);
 
-//   //2) delete old image if exists, before uploading new image
-//   if (req.params.id) {
-//     // console.log(req.params.id);
-//     const category = await Category.findById(req.params.id).select(
-//       'image -_id'
-//     );
-//     // console.log(category);
-//     if (category.image) {
-//       const path = `uploads/categories/${category.image.split('/').pop()}`;
-//       fs.unlinkSync(path);
-//     }
-//   }
+exports.resizeImage = catchAsync(async (req, res, next) => {
+  // console.log(category);
+  await sharp(req.file.buffer)
+    .resize(600, 600)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/categories/${fileName}`);
 
-//   const fileName = `category-${uuidv4()}-${Date.now()}.jpeg`;
-//   await sharp(req.file.buffer)
-//     .resize(600, 600)
-//     .toFormat('jpeg')
-//     .jpeg({ quality: 90 })
-//     .toFile(`uploads/categories/${fileName}`);
+  // save image name to req.body to save in database
+  req.body.image = fileName;
+  next();
+});
 
-//   // save image name to req.body to save in database
-//   req.body.image = fileName;
-//   next();
-// });
+exports.uploadImageToCloudinary = catchAsync(async (req, res, next) => {
+  //1) Check if Image Exist When Updating
+  if (req.params.id) {
+    const category = await Category.findById(req.params.id);
+
+    const publicId = category.get('image.public_id');
+    // console.log(publicId);
+
+    // Delete Image from Cloudinary
+    if (category.image) await cloudinaryDeleteImage(publicId);
+  }
+
+  //2) Upload Image to Cloudinary
+  const result = await cloudinaryUploadImage(imagePath);
+  // console.log(result);
+
+  // 3) save image name to req.body to save in database
+  req.body.image = {
+    public_id: result.public_id,
+    url: result.secure_url
+  };
+
+  // 4 )delete image from server
+  fs.unlinkSync(imagePath);
+  next();
+});
 
 // @desc    Get list of Categories
 // @route   GET /api/v1/categories/
