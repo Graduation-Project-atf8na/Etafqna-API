@@ -24,7 +24,8 @@ const fileName = `category-${uuidv4()}-${Date.now()}.jpeg`;
 const imagePath = path.join(__dirname, `../public/img/categories/${fileName}`);
 
 exports.resizeImage = catchAsync(async (req, res, next) => {
-  // console.log(category);
+  if (!req.file) return next();
+
   await sharp(req.file.buffer)
     .resize(600, 600)
     .toFormat('jpeg')
@@ -32,20 +33,23 @@ exports.resizeImage = catchAsync(async (req, res, next) => {
     .toFile(`public/img/categories/${fileName}`);
 
   // save image name to req.body to save in database
-  req.body.image = fileName;
+  // If Cloudinary is not used
+  // req.body.image = fileName;
+
   next();
 });
 
 exports.uploadImageToCloudinary = catchAsync(async (req, res, next) => {
-  //1) Check if Image Exist When Updating
+  if (!req.file) return next();
+
+  // 1) Check if Image Exist When Updating
   if (req.params.id) {
     const category = await Category.findById(req.params.id);
-
     const publicId = category.get('image.public_id');
     // console.log(publicId);
 
     // Delete Image from Cloudinary
-    if (category.image) await cloudinaryDeleteImage(publicId);
+    if (publicId) await cloudinaryDeleteImage(publicId);
   }
 
   //2) Upload Image to Cloudinary
@@ -58,11 +62,23 @@ exports.uploadImageToCloudinary = catchAsync(async (req, res, next) => {
     url: result.secure_url
   };
 
-  // 4 )delete image from server
+  // 4) Delete image from server
   fs.unlinkSync(imagePath);
+
   next();
 });
 
+exports.deleteImageFromCloudinary = catchAsync(async (req, res, next) => {
+  const category = await Category.findById(req.params.id);
+
+  const publicId = category.get('image.public_id');
+  // console.log(publicId);
+
+  // Delete Image from Cloudinary
+  if (publicId) await cloudinaryDeleteImage(publicId);
+
+  next();
+});
 // @desc    Get list of Categories
 // @route   GET /api/v1/categories/
 // @access  Public

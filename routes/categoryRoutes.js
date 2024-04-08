@@ -8,7 +8,8 @@ const {
   deleteCategory,
   uploadCategoryImage,
   uploadImageToCloudinary,
-  resizeImage
+  resizeImage,
+  deleteImageFromCloudinary
 } = require('../controllers/categoryController');
 
 // const subcategoryRoute = require('./subCategoryRoute');
@@ -37,6 +38,6 @@ router
     uploadImageToCloudinary,
     updateCategory
   )
-  .delete(deleteCategory);
+  .delete(deleteImageFromCloudinary, deleteCategory);
 
 module.exports = router;
