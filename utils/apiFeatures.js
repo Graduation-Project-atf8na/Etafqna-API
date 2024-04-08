@@ -53,12 +53,32 @@ class APIFeatures {
     return this; // Return the modified APIFeatures object for chaining
   }
 
-  paginate() {
+  paginate(countDocuments) {
     const page = this.queryString.page * 1 || 1; // Convert string to number
     const limit = this.queryString.limit * 1 || 50;
     const skip = (page - 1) * limit;
+    //-------------------------------------------
+    const endPageIndex = page * limit; // index of last product in current page
+
+    // Pagination Results
+    const pagination = {};
+    pagination.currentPage = page;
+    pagination.docPerPage = limit;
+    pagination.numberOfPages = Math.ceil(countDocuments / limit);
+
+    // next page
+    if (endPageIndex < countDocuments) {
+      pagination.nextPage = page + 1;
+    }
+
+    // Prev page
+    if (skip > 0) {
+      pagination.prevPage = page - 1;
+    }
+    //--------------------------------------------
 
     this.query = this.query.skip(skip).limit(limit);
+    this.paginationRes = pagination;
 
     return this;
   }
