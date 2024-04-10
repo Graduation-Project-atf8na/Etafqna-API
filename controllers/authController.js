@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+const sendEmail = require('../utils/sendEmail');
 const User = require('../models/userModel');
 
 const signToken = (id) =>
@@ -137,5 +138,109 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // User.findByIdAndUpdate() will NOT work as intended! (this.password will not be encrypted)
 
   // 4) Log user in, send JWT
+  createSendToken(user, 200, res);
+});
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  // 1) Get user based on POSTed email
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(new AppError('There is no user with email address.', 404));
+  }
+
+  // 2) If user exists, Generate hash reset random 6 digits and save it in db
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+  const hashedResetCode = crypto
+    .createHash('sha256')
+    .update(resetCode)
+    .digest('hex');
+
+  // Save hashed reset code into db
+  user.passwordResetCode = hashedResetCode;
+  user.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+  user.codeVerified = false;
+
+  await user.save({ validateBeforeSave: false });
+
+  // 3) Send it to user's email
+  const message = `Your verification code is:\n${resetCode}.\nPlease submit this code to verify your account.`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Your password reset code (valid for 10 minutes)',
+      message
+    });
+  } catch (err) {
+    user.passwordResetCode = undefined;
+    user.passwordResetExpires = undefined;
+    user.codeVerified = undefined;
+
+    await user.save({ validateBeforeSave: false });
+
+    return next(
+      new AppError('There was an error sending the email. Try again later!'),
+      500
+    );
+  }
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Verification code sent to email!'
+  });
+});
+
+exports.verifyCode = catchAsync(async (req, res, next) => {
+  // 1) Get user based on the verification code
+  const hashedResetCode = crypto
+    .createHash('sha256')
+    .update(req.body.otp)
+    .digest('hex');
+
+  const user = await User.findOne({
+    passwordResetCode: hashedResetCode,
+    passwordResetExpires: { $gt: Date.now() }
+  });
+
+  if (!user) {
+    return next(
+      new AppError('Verification code is invalid or has expired', 400)
+    );
+  }
+
+  user.codeVerified = true;
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Verification code is valid'
+  });
+});
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  // 1) Get user based on the email
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(
+      new AppError(`There is no user with that email ${req.body.email}`, 404)
+    );
+  }
+
+  // 2) Check if verification code is verified
+  if (!user.codeVerified) {
+    return next(new AppError('Please verify your reset code first!', 400));
+  }
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.confirmPassword;
+  user.passwordResetCode = undefined;
+  user.passwordResetExpires = undefined;
+  user.codeVerified = undefined;
+  await user.save();
+
+  // 3) Log the admin in, send JWT
   createSendToken(user, 200, res);
 });

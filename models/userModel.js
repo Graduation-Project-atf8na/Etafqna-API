@@ -48,7 +48,10 @@ const userSchema = new mongoose.Schema({
       message: 'Passwords are not the same!'
     }
   },
-  passwordChangedAt: Date
+  passwordChangedAt: Date,
+  passwordResetCode: String,
+  passwordResetExpires: Date,
+  codeVerified: Boolean
 });
 
 // Encrypt password using bcrypt
