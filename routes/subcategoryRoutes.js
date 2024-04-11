@@ -23,10 +23,10 @@ router
   .route('/')
   .get(createFilterOpj, getAllSubcategories)
   .post(
-    setCategoryIdToBody,
     uploadSubcategoryImage,
     resizeImage,
     uploadImageToCloudinary,
+    setCategoryIdToBody,
     createSubcategory
   );
 

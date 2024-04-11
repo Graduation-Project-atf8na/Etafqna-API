@@ -89,6 +89,7 @@ exports.deleteImageFromCloudinary = catchAsync(async (req, res, next) => {
 // while creating Subcategory form Category
 exports.setCategoryIdToBody = (req, res, next) => {
   if (!req.body.category) req.body.category = req.params.categoryId;
+  //   console.log(req.body.category);
 
   next();
 };

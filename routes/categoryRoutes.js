@@ -12,12 +12,13 @@ const {
   deleteImageFromCloudinary
 } = require('../controllers/categoryController');
 
-// const subcategoryRoute = require('./subCategoryRoute');
+const subcategoryRoute = require('./subcategoryRoutes');
 
 const router = express.Router();
 
 // Nested Route
-// router.use('/:categoryId/subcategories', subcategoryRoute);
+// Enable Create Subcategory /Get All Subcategories in Category
+router.use('/:categoryId/subcategories', subcategoryRoute);
 
 router
   .route('/')
