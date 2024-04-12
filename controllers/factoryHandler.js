@@ -71,10 +71,13 @@ exports.getOne = (Model, popOptions) =>
 
 exports.getAll = (Model, modelName = '') =>
   catchAsync(async (req, res) => {
+    // Filter Object for Nested Routes
+    // If Nested Route, filter by Parent Id
     let filter = {};
     if (req.filterObj) {
       filter = req.filterObj;
     }
+
     // Build Query
     const docsCouter = await Model.countDocuments();
     const apiFeatures = new ApiFeatures(Model.find(filter), req.query)
