@@ -4,7 +4,7 @@ const slugify = require('slugify');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const ApiFeatures = require('../utils/apiFeatures');
-const Subcategory = require('../models/subcategoryModel');
+// const Subcategory = require('../models/subcategoryModel');
 
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
@@ -26,30 +26,37 @@ exports.updateOne = (Model) =>
     }
 
     // check if all subcategories are belong to exsit category in req.body
-    if (Model === 'Product' && req.body.subcategories) {
-      const { subcategoriesIdsInBody } = req.body;
-      // Get all subcategories in DB that belong to category in request
-      const subcategoriesIdsInDB = Subcategory.find({
-        category: req.body.category
-      }).map((sub) => sub._id);
+    // if (Model === 'Product' && req.body.subcategories) {
+    //   const subcategoriesIdsInBody = req.body.subcategories.split(',');
+    //   console.log(subcategoriesIdsInBody);
 
-      const isSubcategoriesBelongToCategory = subcategoriesIdsInBody.every(
-        (sub) => subcategoriesIdsInDB.includes(sub)
-      );
+    //   // Get all subcategories in DB that belong to category in request
+    //   const subObj = Subcategory.find({
+    //     category: req.body.category
+    //   });
 
-      const notIncludedValues = subcategoriesIdsInBody.filter(
-        (value) => !subcategoriesIdsInDB.includes(value)
-      );
+    //   const subcategoriesIdsInDB = subObj.map((sub) => sub._id.toString());
+    //   console.log(subcategoriesIdsInDB);
 
-      if (!isSubcategoriesBelongToCategory) {
-        return next(
-          new AppError(
-            `Subcategory: ${notIncludedValues} not belong to Category!`,
-            400
-          )
-        );
-      }
-    }
+    //   const isSubcategoriesBelongToCategory = subcategoriesIdsInBody.every(
+    //     (sub) => subcategoriesIdsInDB.includes(sub)
+    //   );
+
+    //   let notIncludedValues = [];
+    //   notIncludedValues = subcategoriesIdsInBody.filter(
+    //     (value) => !subcategoriesIdsInDB.includes(value)
+    //   );
+    //   // console.log(`not includes: ${notIncludedValues}`);
+
+    //   if (!isSubcategoriesBelongToCategory) {
+    //     return next(
+    //       new AppError(
+    //         `Subcategory: ${notIncludedValues} not belong to Category!`,
+    //         400
+    //       )
+    //     );
+    //   }
+    // }
 
     const doc = await Model.findByIdAndUpdate(
       req.params.id, // id of the document to update
@@ -92,6 +99,39 @@ exports.createOne = (Model) =>
     //   console.log(subcategoriesIdsInDB);
 
     //   // console.log(req.body.category);
+
+    //   const isSubcategoriesBelongToCategory = subcategoriesIdsInBody.every(
+    //     (sub) => subcategoriesIdsInDB.includes(sub)
+    //   );
+
+    //   let notIncludedValues = [];
+    //   notIncludedValues = subcategoriesIdsInBody.filter(
+    //     (value) => !subcategoriesIdsInDB.includes(value)
+    //   );
+    //   // console.log(`not includes: ${notIncludedValues}`);
+
+    //   if (!isSubcategoriesBelongToCategory) {
+    //     return next(
+    //       new AppError(
+    //         `Subcategory: ${notIncludedValues} not belong to Category!`,
+    //         400
+    //       )
+    //     );
+    //   }
+    // }
+
+    // check if all subcategories are belong to exsit category in req.body
+    // if (Model === 'Product') {
+    //   const subcategoriesIdsInBody = req.body.subcategories.split(',');
+    //   console.log(subcategoriesIdsInBody);
+
+    //   // Get all subcategories in DB that belong to category in request
+    //   const subObj = Subcategory.find({
+    //     category: req.body.category
+    //   });
+
+    //   const subcategoriesIdsInDB = subObj.map((sub) => sub._id.toString());
+    //   console.log(subcategoriesIdsInDB);
 
     //   const isSubcategoriesBelongToCategory = subcategoriesIdsInBody.every(
     //     (sub) => subcategoriesIdsInDB.includes(sub)
