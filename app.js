@@ -28,6 +28,22 @@ app.use('/api/v1/categories', categoryRouter);
 app.use('/api/v1/subcategories', subcategoryRouter);
 app.use('/api/v1/products', productRouter);
 
+// Test Route
+app.get('/api/v1/test', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Test Route'
+  });
+});
+
+// Root Route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Welcome to Etafqna API'
+  });
+});
+
 // ERROR HANDLING MIDDLEWARE
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
