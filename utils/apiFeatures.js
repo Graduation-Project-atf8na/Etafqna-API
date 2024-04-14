@@ -39,14 +39,24 @@ class APIFeatures {
     return this;
   }
 
-  search() {
+  search(modelName) {
     if (this.queryString.search) {
-      const searchQuery = {
-        $or: [
-          { name: { $regex: this.queryString.search, $options: 'i' } }
-          // Add more fields to search as needed
-        ]
-      };
+      let searchQuery = {};
+
+      if (modelName === 'Product') {
+        searchQuery.$or = [
+          { name: { $regex: this.queryString.search, $options: 'i' } },
+          { description: { $regex: this.queryString.search, $options: 'i' } }
+        ];
+      } else {
+        searchQuery = {
+          $or: [
+            { name: { $regex: this.queryString.search, $options: 'i' } }
+            // Add more fields to search as needed
+          ]
+        };
+      }
+
       this.query = this.query.find(searchQuery);
     }
 
