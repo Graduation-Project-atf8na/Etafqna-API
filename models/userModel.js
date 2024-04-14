@@ -2,57 +2,88 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Please tell us your name!']
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'Please tell us your name!']
+    },
+    email: {
+      type: String,
+      required: [true, 'Please provide your email'],
+      unique: true,
+      lowercase: true,
+      validate: [validator.isEmail, 'Please provide a valid email']
+    },
+    phone: {
+      type: String,
+      unique: true,
+      validate: [validator.isMobilePhone, 'Please provide a valid phone number']
+    },
+    image: String,
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point']
+        },
+        coordinates: [Number],
+        address: String
+      }
+    ],
+    following: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User'
+      }
+    ],
+    favItems: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Product'
+      }
+    ],
+    active: {
+      type: Boolean,
+      default: true,
+      select: false
+    },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user'
+    },
+    password: {
+      type: String,
+      required: [true, 'Please provide a password'],
+      minlength: 8,
+      select: false
+    },
+    passwordConfirm: {
+      type: String,
+      required: [true, 'Please confirm your password'],
+      validate: {
+        // This only works on CREATE and SAVE!!!
+        validator: function (el) {
+          return el === this.password;
+        },
+        message: 'Passwords are not the same!'
+      }
+    },
+    passwordChangedAt: Date,
+    passwordResetCode: String,
+    passwordResetExpires: Date,
+    codeVerified: Boolean
   },
-  email: {
-    type: String,
-    required: [true, 'Please provide your email'],
-    unique: true,
-    lowercase: true,
-    validate: [validator.isEmail, 'Please provide a valid email']
+  {
+    timestamps: true
   },
-  phone: {
-    type: String,
-    unique: true,
-    validate: [validator.isMobilePhone, 'Please provide a valid phone number']
-  },
-  photo: String,
-  location: String,
-  active: {
-    type: Boolean,
-    default: true,
-    select: false
-  },
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
-  },
-  password: {
-    type: String,
-    required: [true, 'Please provide a password'],
-    minlength: 8,
-    select: false
-  },
-  passwordConfirm: {
-    type: String,
-    required: [true, 'Please confirm your password'],
-    validate: {
-      // This only works on CREATE and SAVE!!!
-      validator: function (el) {
-        return el === this.password;
-      },
-      message: 'Passwords are not the same!'
-    }
-  },
-  passwordChangedAt: Date,
-  passwordResetCode: String,
-  passwordResetExpires: Date,
-  codeVerified: Boolean
-});
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
+);
 
 // Encrypt password using bcrypt
 userSchema.pre('save', async function (next) {
