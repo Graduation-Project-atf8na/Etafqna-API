@@ -19,24 +19,11 @@ const productSchema = new mongoose.Schema(
       required: [true, 'Product Description is required'],
       minlength: [20, 'Too short product Description']
     },
-    quantity: {
-      type: Number,
-      required: [true, 'Product Quatity is required']
-    },
-    sold: {
-      type: Number,
-      default: 0
-    },
     price: {
       type: Number,
       required: [true, 'Product price is required'],
       trim: true
     },
-    priceAfterDiscount: {
-      type: Number
-    },
-    colors: [String],
-
     imageCover: {
       type: Map,
       of: String,
@@ -59,15 +46,12 @@ const productSchema = new mongoose.Schema(
         ref: 'SubCategory'
       }
     ],
-    ratingsAverage: {
-      type: Number,
-      min: [1, 'Your Rating must be above or equal to 1.0'],
-      max: [5, 'Your Rating must be below or equal to 5.0']
-    },
-    ratingsQuantity: {
-      type: Number,
-      default: 0
-    }
+    comments: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Comment'
+      }
+    ]
   },
   { timestamps: true }
 );
@@ -76,11 +60,10 @@ productSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'category',
     select: 'name _id'
+  }).populate({
+    path: 'comments',
+    select: 'comment user createdAt'
   });
-  // .populate({
-  //   path: 'subcategories',
-  //   select: 'name _id'
-  // });
 
   next();
 });
