@@ -4,7 +4,7 @@ const commentSchema = new mongoose.Schema(
   {
     comment: {
       type: String,
-      required: [true, 'Please provide a comment'],
+      required: [true, 'Comment Can not Be Empty, Please provide a comment'],
       trim: true,
       minlength: [1, 'Too short comment'],
       maxlength: [1000, 'Too long comment']
@@ -25,4 +25,4 @@ const commentSchema = new mongoose.Schema(
   }
 );
 
-const Comment = mongoose.model('Comment', commentSchema);
+module.exports = mongoose.model('Comment', commentSchema);
