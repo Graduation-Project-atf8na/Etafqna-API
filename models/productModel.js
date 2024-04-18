@@ -35,6 +35,22 @@ const productSchema = new mongoose.Schema(
         of: String
       }
     ],
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      required: [true, 'Product must be belong to a user']
+    },
+    location: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point']
+        },
+        coordinates: [Number],
+        address: String
+      }
+    ],
     category: {
       type: mongoose.Schema.ObjectId,
       ref: 'Category',
