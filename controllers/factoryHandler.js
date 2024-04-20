@@ -81,7 +81,7 @@ exports.createOne = (Model) =>
     // console.log(req.body);
     // Create slug Field
 
-    if (Model !== 'User') {
+    if (Model !== 'User' && req.body.name) {
       req.body.slug = slugify(req.body.name, { lower: true });
     }
 

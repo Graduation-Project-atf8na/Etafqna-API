@@ -35,6 +35,22 @@ const productSchema = new mongoose.Schema(
         of: String
       }
     ],
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      required: [true, 'Product must be belong to a user']
+    },
+    location: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point']
+        },
+        coordinates: [Number],
+        address: String
+      }
+    ],
     category: {
       type: mongoose.Schema.ObjectId,
       ref: 'Category',
@@ -45,16 +61,23 @@ const productSchema = new mongoose.Schema(
         type: mongoose.Schema.ObjectId,
         ref: 'SubCategory'
       }
-    ],
-    comments: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Comment'
-      }
     ]
+    // comments: [
+    //   {
+    //     type: mongoose.Schema.ObjectId,
+    //     ref: 'Comment'
+    //   }
+    // ]
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+productSchema.virtual('comments', {
+  ref: 'Comment',
+  localField: '_id',
+  foreignField: 'product'
+});
+
 // Mongoose Query Middleware
 productSchema.pre(/^find/, function (next) {
   this.populate({
@@ -62,7 +85,7 @@ productSchema.pre(/^find/, function (next) {
     select: 'name _id'
   }).populate({
     path: 'comments',
-    select: 'comment user createdAt'
+    select: 'comment user -product'
   });
 
   next();
