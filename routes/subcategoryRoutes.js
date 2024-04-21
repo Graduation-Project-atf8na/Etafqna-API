@@ -9,6 +9,7 @@ const {
   getSubcategory,
   updateSubcategory,
   deleteSubcategory,
+  // checkCategoryId,
 
   uploadSubcategoryImage,
   resizeImage,
@@ -19,16 +20,14 @@ const {
 // mergeParams: allow us to access parameters on other routes
 const router = express.Router({ mergeParams: true });
 
-router
-  .route('/')
-  .get(createFilterOpj, getAllSubcategories)
-  .post(
-    uploadSubcategoryImage,
-    resizeImage,
-    uploadImageToCloudinary,
-    setCategoryIdToBody,
-    createSubcategory
-  );
+router.route('/').get(createFilterOpj, getAllSubcategories).post(
+  uploadSubcategoryImage,
+  resizeImage,
+  uploadImageToCloudinary,
+  setCategoryIdToBody,
+  // checkCategoryId,
+  createSubcategory
+);
 
 router
   .route('/:id')
@@ -37,6 +36,7 @@ router
     uploadSubcategoryImage,
     resizeImage,
     uploadImageToCloudinary,
+    // checkCategoryId,
     updateSubcategory
   )
   .delete(deleteImageFromCloudinary, deleteSubcategory);

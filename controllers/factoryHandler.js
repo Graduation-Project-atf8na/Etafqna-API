@@ -5,6 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const ApiFeatures = require('../utils/apiFeatures');
 // const Subcategory = require('../models/subcategoryModel');
+const Category = require('../models/categoryModel');
 
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
@@ -23,6 +24,18 @@ exports.updateOne = (Model) =>
     // Update slug if Name Field Updated and Model is not User
     if (Model !== 'User' && req.body.name) {
       req.body.slug = slugify(req.body.name, { lower: true });
+    }
+
+    // Check if Category Exist Before Creating Subcategory
+    if (Model.modelName === 'Subcategory') {
+      // console.log(req.body.category);
+
+      const category = await Category.findById(req.body.category);
+      if (!category) {
+        return next(
+          new AppError(`No Category with this ID: ${req.body.category}`, 404)
+        );
+      }
     }
 
     // check if all subcategories are belong to exsit category in req.body
@@ -78,11 +91,24 @@ exports.updateOne = (Model) =>
 
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
-    // console.log(req.body);
-    // Create slug Field
+    // console.log(Model);
+    // console.log(Model.modelName);
 
+    // Create slug Field
     if (Model !== 'User' && req.body.name) {
       req.body.slug = slugify(req.body.name, { lower: true });
+    }
+
+    // Check if Category Exist Before Creating Subcategory
+    if (Model.modelName === 'Subcategory') {
+      // console.log(req.body.category);
+
+      const category = await Category.findById(req.body.category);
+      if (!category) {
+        return next(
+          new AppError(`No Category with this ID: ${req.body.category}`, 404)
+        );
+      }
     }
 
     // check if all subcategories are belong to exsit category in req.body
