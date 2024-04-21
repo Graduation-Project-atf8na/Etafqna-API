@@ -5,10 +5,10 @@ const sharp = require('sharp');
 const { v4: uuidv4 } = require('uuid');
 // const asyncHandler = require('express-async-handler');
 
-const AppError = require('../utils/appError');
+// const AppError = require('../utils/appError');
 const factory = require('./factoryHandler');
 const Subcategory = require('../models/subcategoryModel');
-const Category = require('../models/categoryModel');
+// const Category = require('../models/categoryModel');
 
 const { uploadSingleImage } = require('../utils/multer');
 const catchAsync = require('../utils/catchAsync');
