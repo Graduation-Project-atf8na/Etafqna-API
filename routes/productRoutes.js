@@ -15,12 +15,15 @@ const {
   deleteImagesFromCloudinary
 } = require('../controllers/productController');
 
+const authController = require('../controllers/authController');
+
 const router = express.Router();
 
 router
   .route('/')
   .get(getAllProducts)
   .post(
+    authController.protect,
     handleProductImages,
     resizeProductImages,
     checkSubcategoriesBelongToCategory,
@@ -33,6 +36,8 @@ router
   .route('/:id')
   .get(getProduct)
   .patch(
+    authController.protect,
+    authController.restrictTo('user'),
     handleProductImages,
     resizeProductImages,
     checkSubcategoriesBelongToCategory,
@@ -41,6 +46,8 @@ router
     updateProduct
   )
   .delete(
+    authController.protect,
+    authController.restrictTo('user', 'admin'),
     deleteImageCoverFromCloudinary,
     deleteImagesFromCloudinary,
     deleteProduct

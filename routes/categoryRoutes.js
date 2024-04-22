@@ -12,18 +12,21 @@ const {
   deleteImageFromCloudinary
 } = require('../controllers/categoryController');
 
-const subcategoryRoute = require('./subcategoryRoutes');
+const authController = require('../controllers/authController');
+const subCategoryRoute = require('./subcategoryRoutes');
 
 const router = express.Router();
 
 // Nested Route
 // Enable Create Subcategory /Get All Subcategories in Category
-router.use('/:categoryId/subcategories', subcategoryRoute);
+router.use('/:categoryId/subcategories', subCategoryRoute);
 
 router
   .route('/')
   .get(getAllCategories)
   .post(
+    authController.protect,
+    authController.restrictTo('admin'),
     uploadCategoryImage,
     resizeImage,
     uploadImageToCloudinary,
@@ -34,11 +37,18 @@ router
   .route('/:id')
   .get(getCategory)
   .patch(
+    authController.protect,
+    authController.restrictTo('admin'),
     uploadCategoryImage,
     resizeImage,
     uploadImageToCloudinary,
     updateCategory
   )
-  .delete(deleteImageFromCloudinary, deleteCategory);
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin'),
+    deleteImageFromCloudinary,
+    deleteCategory
+  );
 
 module.exports = router;

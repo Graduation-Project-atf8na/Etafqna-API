@@ -8,7 +8,7 @@ const {
   deleteComment
 } = require('../controllers/commentController');
 
-// const productRoute = require('./productRoutes');
+const authController = require('../controllers/authController');
 
 const router = express.Router();
 
@@ -16,8 +16,27 @@ const router = express.Router();
 // Enable Create Comment /Get All Comments in Product
 // router.use('/:productId/comments', productRoute);
 
-router.route('/').get(getAllComments).post(createComment);
+router
+  .route('/')
+  .get(getAllComments)
+  .post(
+    authController.protect,
+    authController.restrictTo('user'),
+    createComment
+  );
 
-router.route('/:id').get(getComment).patch(updateComment).delete(deleteComment);
+router
+  .route('/:id')
+  .get(getComment)
+  .patch(
+    authController.protect,
+    authController.restrictTo('user'),
+    updateComment
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo('user', 'admin'),
+    deleteComment
+  );
 
 module.exports = router;
