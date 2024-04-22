@@ -9,6 +9,22 @@ const ApiFeatures = require('../utils/apiFeatures');
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
+
+    if (Model.modelName === 'Product') {
+      // Get product data
+      const product = await Model.findById(id);
+      if (!product) {
+        return next(new AppError(`No Document for this Id: ${id}`, 404));
+      }
+      const userID = product.user;
+      // Check if user is the owner of the product
+      if (userID.toString() !== req.user._id.toString()) {
+        return next(
+          new AppError('You are not allowed to delete this product!', 403)
+        );
+      }
+    }
+
     const deletedDoc = await Model.findByIdAndDelete(id);
 
     if (!deletedDoc) {

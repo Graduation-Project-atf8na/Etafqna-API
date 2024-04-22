@@ -44,6 +44,12 @@ const userSchema = new mongoose.Schema(
         ref: 'Product'
       }
     ],
+    // products: [
+    //   {
+    //     type: mongoose.Schema.ObjectId,
+    //     ref: 'Product'
+    //   }
+    // ],
     active: {
       type: Boolean,
       default: true,
@@ -85,6 +91,14 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+// Query middleware
+userSchema.pre(/^find/, function (next) {
+  // 'this' points to the current query
+  this.find({ active: { $ne: false } });
+
+  next();
+});
+
 // Encrypt password using bcrypt
 userSchema.pre('save', async function (next) {
   // Only run this function if password was actually modified
@@ -103,13 +117,6 @@ userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 1000; // Subtract 1 second to make sure the token is always created after the password was changed
-  next();
-});
-
-// Query middleware
-userSchema.pre(/^find/, function (next) {
-  // 'this' points to the current query
-  this.find({ active: { $ne: false } });
   next();
 });
 
