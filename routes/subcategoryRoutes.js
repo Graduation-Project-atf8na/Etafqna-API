@@ -9,6 +9,7 @@ const {
   getSubcategory,
   updateSubcategory,
   deleteSubcategory,
+  // checkCategoryId,
 
   uploadSubcategoryImage,
   resizeImage,
@@ -25,8 +26,6 @@ router
   .route('/')
   .get(createFilterOpj, getAllSubcategories)
   .post(
-    authController.protect,
-    authController.restrictTo('admin'),
     uploadSubcategoryImage,
     resizeImage,
     uploadImageToCloudinary,
@@ -43,6 +42,7 @@ router
     uploadSubcategoryImage,
     resizeImage,
     uploadImageToCloudinary,
+    // checkCategoryId,
     updateSubcategory
   )
   .delete(

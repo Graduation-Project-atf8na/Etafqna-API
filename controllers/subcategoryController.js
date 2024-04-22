@@ -5,8 +5,11 @@ const sharp = require('sharp');
 const { v4: uuidv4 } = require('uuid');
 // const asyncHandler = require('express-async-handler');
 
+// const AppError = require('../utils/appError');
 const factory = require('./factoryHandler');
 const Subcategory = require('../models/subcategoryModel');
+// const Category = require('../models/categoryModel');
+
 const { uploadSingleImage } = require('../utils/multer');
 const catchAsync = require('../utils/catchAsync');
 const {
@@ -102,6 +105,23 @@ exports.createFilterOpj = (req, res, next) => {
   req.filterObj = filterObject;
   next();
 };
+
+// @desc    Category ID Check Middleware
+// @route   POST /api/v1/subcategories - PATCH /api/v1/subcategories/:id
+// @access  Private
+// exports.checkCategoryId = catchAsync(async (req, res, next) => {
+//   console.log(req.body.category);
+//   if (req.body.category) {
+//     const category = await Category.findById(req.body.category);
+//     if (!category) {
+//       return next(
+//         new AppError(`No Category with this ID: ${req.body.category}`, 404)
+//       );
+//     }
+//   }
+
+//   next();
+// });
 
 // @desc    Get list of SubCategories
 // @route   GET /api/v1/subcategories/
