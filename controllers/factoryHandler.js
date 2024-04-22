@@ -181,6 +181,11 @@ exports.createOne = (Model) =>
 
     const doc = await Model.create(req.body);
 
+    // if (!doc && req.file) {
+    //   // delete image form cloudinary if fouded
+    //   await cloudinaryDeleteImage(req.file.public_id);
+    // }
+
     res.status(201).json({ message: 'success', date: doc });
   });
 

@@ -19,11 +19,6 @@ const productSchema = new mongoose.Schema(
       required: [true, 'Product Description is required'],
       minlength: [20, 'Too short product Description']
     },
-    price: {
-      type: Number,
-      required: [true, 'Product price is required'],
-      trim: true
-    },
     imageCover: {
       type: Map,
       of: String,
