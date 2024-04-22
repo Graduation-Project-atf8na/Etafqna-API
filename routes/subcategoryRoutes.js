@@ -17,28 +17,39 @@ const {
   deleteImageFromCloudinary
 } = require('../controllers/subcategoryController');
 
+const authController = require('../controllers/authController');
+
 // mergeParams: allow us to access parameters on other routes
 const router = express.Router({ mergeParams: true });
 
-router.route('/').get(createFilterOpj, getAllSubcategories).post(
-  uploadSubcategoryImage,
-  resizeImage,
-  uploadImageToCloudinary,
-  setCategoryIdToBody,
-  // checkCategoryId,
-  createSubcategory
-);
+router
+  .route('/')
+  .get(createFilterOpj, getAllSubcategories)
+  .post(
+    uploadSubcategoryImage,
+    resizeImage,
+    uploadImageToCloudinary,
+    setCategoryIdToBody,
+    createSubcategory
+  );
 
 router
   .route('/:id')
   .get(getSubcategory)
   .patch(
+    authController.protect,
+    authController.restrictTo('admin'),
     uploadSubcategoryImage,
     resizeImage,
     uploadImageToCloudinary,
     // checkCategoryId,
     updateSubcategory
   )
-  .delete(deleteImageFromCloudinary, deleteSubcategory);
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin'),
+    deleteImageFromCloudinary,
+    deleteSubcategory
+  );
 
 module.exports = router;
