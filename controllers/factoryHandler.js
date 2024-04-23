@@ -11,17 +11,42 @@ exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
 
+    // Product Checker
     if (Model.modelName === 'Product') {
       // Get product data
       const product = await Model.findById(id);
+
+      // Check if product exist
       if (!product) {
-        return next(new AppError(`No Document for this Id: ${id}`, 404));
+        return next(new AppError(`No Product for this Id: ${id}`, 404));
       }
-      const userID = product.user;
+
       // Check if user is the owner of the product
+      const userID = product.user;
       if (userID.toString() !== req.user._id.toString()) {
         return next(
-          new AppError('You are not allowed to delete this product!', 403)
+          new AppError(
+            'You are not The Owner of this Product to perform This Action !',
+            403
+          )
+        );
+      }
+    }
+
+    // Comment Checker
+    if (Model.modelName === 'Comment') {
+      const comment = await Model.findById(id);
+
+      // Check if comment exist
+      if (!comment) {
+        return next(new AppError(`No Comment for this Id: ${id}`, 404));
+      }
+      const userID = comment.user;
+
+      // Check if user is the owner of the comment
+      if (userID.toString() !== req.user._id.toString()) {
+        return next(
+          new AppError('You are not allowed to delete this comment!', 403)
         );
       }
     }
@@ -37,15 +62,16 @@ exports.deleteOne = (Model) =>
 
 exports.updateOne = (Model) =>
   catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+
     // Update slug if Name Field Updated and Model is not User
-    if (Model !== 'User' && req.body.name) {
+    if (Model.modelName !== 'User' && req.body.name) {
       req.body.slug = slugify(req.body.name, { lower: true });
     }
 
     // Check if Category Exist Before Creating Subcategory
     if (Model.modelName === 'Subcategory') {
       // console.log(req.body.category);
-
       const category = await Category.findById(req.body.category);
       if (!category) {
         return next(
@@ -54,41 +80,45 @@ exports.updateOne = (Model) =>
       }
     }
 
-    // check if all subcategories are belong to exsit category in req.body
-    // if (Model === 'Product' && req.body.subcategories) {
-    //   const subcategoriesIdsInBody = req.body.subcategories.split(',');
-    //   console.log(subcategoriesIdsInBody);
+    // Product Checker
+    if (Model.modelName === 'Product') {
+      // Get product data
+      const product = await Model.findById(id);
 
-    //   // Get all subcategories in DB that belong to category in request
-    //   const subObj = Subcategory.find({
-    //     category: req.body.category
-    //   });
+      // Check if product exist
+      if (!product) {
+        return next(new AppError(`No Document for this Id: ${id}`, 404));
+      }
 
-    //   const subcategoriesIdsInDB = subObj.map((sub) => sub._id.toString());
-    //   console.log(subcategoriesIdsInDB);
+      // Check if user is the Owner of the product
+      const userID = product.user;
+      if (userID.toString() !== req.user._id.toString()) {
+        return next(
+          new AppError('You are not allowed to Update this product!', 403)
+        );
+      }
+    }
 
-    //   const isSubcategoriesBelongToCategory = subcategoriesIdsInBody.every(
-    //     (sub) => subcategoriesIdsInDB.includes(sub)
-    //   );
+    // Comment Checker
+    if (Model.modelName === 'Comment') {
+      const comment = await Model.findById(id);
 
-    //   let notIncludedValues = [];
-    //   notIncludedValues = subcategoriesIdsInBody.filter(
-    //     (value) => !subcategoriesIdsInDB.includes(value)
-    //   );
-    //   // console.log(`not includes: ${notIncludedValues}`);
+      // Check if comment exist
+      if (!comment) {
+        return next(new AppError(`No Comment for this Id: ${id}`, 404));
+      }
 
-    //   if (!isSubcategoriesBelongToCategory) {
-    //     return next(
-    //       new AppError(
-    //         `Subcategory: ${notIncludedValues} not belong to Category!`,
-    //         400
-    //       )
-    //     );
-    //   }
-    // }
+      // Check if user is the owner of the comment
+      const userID = comment.user;
+      if (userID.toString() !== req.user._id.toString()) {
+        return next(
+          new AppError('You are not allowed to Update this comment!', 403)
+        );
+      }
+    }
 
     const doc = await Model.findByIdAndUpdate(
-      req.params.id, // id of the document to update
+      id, // id of the document to update
       req.body, // data to update
       { new: true } // to return Model after updating
     );
