@@ -19,6 +19,10 @@ const productSchema = new mongoose.Schema(
       required: [true, 'Product Description is required'],
       minlength: [20, 'Too short product Description']
     },
+    price: {
+      type: Number,
+      required: [true, 'Product Price is required']
+    },
     imageCover: {
       type: Map,
       of: String,
@@ -57,12 +61,6 @@ const productSchema = new mongoose.Schema(
         ref: 'SubCategory'
       }
     ]
-    // comments: [
-    //   {
-    //     type: mongoose.Schema.ObjectId,
-    //     ref: 'Comment'
-    //   }
-    // ]
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

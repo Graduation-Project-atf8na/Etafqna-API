@@ -11,27 +11,22 @@ exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
 
-    // Product Checker
-    if (Model.modelName === 'Product') {
-      // Get product data
-      const product = await Model.findById(id);
+    // Product Checker -> handled in validation layer
+    // if (Model.modelName === 'Product') {
+    //   //   // Get product data
+    //   const product = await Model.findById(id);
 
-      // Check if product exist
-      if (!product) {
-        return next(new AppError(`No Product for this Id: ${id}`, 404));
-      }
-
-      // Check if user is the owner of the product
-      const userID = product.user;
-      if (userID.toString() !== req.user._id.toString()) {
-        return next(
-          new AppError(
-            'You are not The Owner of this Product to perform This Action !',
-            403
-          )
-        );
-      }
-    }
+    //   // Check if user is the owner of the product
+    //   const userID = product.user;
+    //   if (userID.toString() !== req.user._id.toString()) {
+    //     return next(
+    //       new AppError(
+    //         'You are not The Owner of this Product to perform This Action !',
+    //         403
+    //       )
+    //     );
+    //   }
+    // }
 
     // Comment Checker
     if (Model.modelName === 'Comment') {
@@ -63,25 +58,6 @@ exports.deleteOne = (Model) =>
 exports.updateOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
-
-    // Product Checker
-    if (Model.modelName === 'Product') {
-      // Get product data
-      const product = await Model.findById(id);
-
-      // Check if product exist
-      if (!product) {
-        return next(new AppError(`No Document for this Id: ${id}`, 404));
-      }
-
-      // Check if user is the Owner of the product
-      const userID = product.user;
-      if (userID.toString() !== req.user._id.toString()) {
-        return next(
-          new AppError('You are not allowed to Update this product!', 403)
-        );
-      }
-    }
 
     // Comment Checker
     if (Model.modelName === 'Comment') {

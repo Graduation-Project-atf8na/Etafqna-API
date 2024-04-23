@@ -218,6 +218,16 @@ exports.checkSubcategoriesBelongToCategory = catchAsync(
   }
 );
 
+exports.addUserToBody = (req, res, next) => {
+  req.body.user = req.user.id;
+  next();
+};
+
+exports.addCategoryToBody = (req, res, next) => {
+  if (!req.body.category) req.body.category = req.params.categoryId;
+  next();
+};
+
 // @desc    Get list of Products
 // @route   GET /api/v1/products/
 // @access  Public
