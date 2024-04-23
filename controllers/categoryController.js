@@ -71,11 +71,13 @@ exports.uploadImageToCloudinary = catchAsync(async (req, res, next) => {
 exports.deleteImageFromCloudinary = catchAsync(async (req, res, next) => {
   const category = await Category.findById(req.params.id);
 
-  const publicId = category.get('image.public_id');
-  // console.log(publicId);
+  if (category) {
+    const publicId = category.get('image.public_id');
+    // console.log(publicId);
 
-  // Delete Image from Cloudinary
-  if (publicId) await cloudinaryDeleteImage(publicId);
+    // Delete Image from Cloudinary
+    if (publicId) await cloudinaryDeleteImage(publicId);
+  }
 
   next();
 });

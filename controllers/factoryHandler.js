@@ -137,11 +137,16 @@ exports.updateOne = (Model) =>
 
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
+    // console.log(req.body);
     // console.log(Model);
     // console.log(Model.modelName);
 
     // Create slug Field
-    if (Model !== 'User' && req.body.name) {
+    if (
+      Model.modelName !== 'User' &&
+      req.body.name &&
+      Model.modelName !== 'Category'
+    ) {
       req.body.slug = slugify(req.body.name, { lower: true });
     }
 
