@@ -1,37 +1,32 @@
 // const catchAsync = require('express-async-handler');
-const slugify = require('slugify');
+// const slugify = require('slugify');
 
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const ApiFeatures = require('../utils/apiFeatures');
 // const Subcategory = require('../models/subcategoryModel');
-const Category = require('../models/categoryModel');
+// const Category = require('../models/categoryModel');
 
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
 
-    // Product Checker
-    if (Model.modelName === 'Product') {
-      // Get product data
-      const product = await Model.findById(id);
+    // Product Checker -> handled in validation layer
+    // if (Model.modelName === 'Product') {
+    //   //   // Get product data
+    //   const product = await Model.findById(id);
 
-      // Check if product exist
-      if (!product) {
-        return next(new AppError(`No Product for this Id: ${id}`, 404));
-      }
-
-      // Check if user is the owner of the product
-      const userID = product.user;
-      if (userID.toString() !== req.user._id.toString()) {
-        return next(
-          new AppError(
-            'You are not The Owner of this Product to perform This Action !',
-            403
-          )
-        );
-      }
-    }
+    //   // Check if user is the owner of the product
+    //   const userID = product.user;
+    //   if (userID.toString() !== req.user._id.toString()) {
+    //     return next(
+    //       new AppError(
+    //         'You are not The Owner of this Product to perform This Action !',
+    //         403
+    //       )
+    //     );
+    //   }
+    // }
 
     // Comment Checker
     if (Model.modelName === 'Comment') {
@@ -63,41 +58,6 @@ exports.deleteOne = (Model) =>
 exports.updateOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
-
-    // Update slug if Name Field Updated and Model is not User
-    if (Model.modelName !== 'User' && req.body.name) {
-      req.body.slug = slugify(req.body.name, { lower: true });
-    }
-
-    // Check if Category Exist Before Creating Subcategory
-    if (Model.modelName === 'Subcategory') {
-      // console.log(req.body.category);
-      const category = await Category.findById(req.body.category);
-      if (!category) {
-        return next(
-          new AppError(`No Category with this ID: ${req.body.category}`, 404)
-        );
-      }
-    }
-
-    // Product Checker
-    if (Model.modelName === 'Product') {
-      // Get product data
-      const product = await Model.findById(id);
-
-      // Check if product exist
-      if (!product) {
-        return next(new AppError(`No Document for this Id: ${id}`, 404));
-      }
-
-      // Check if user is the Owner of the product
-      const userID = product.user;
-      if (userID.toString() !== req.user._id.toString()) {
-        return next(
-          new AppError('You are not allowed to Update this product!', 403)
-        );
-      }
-    }
 
     // Comment Checker
     if (Model.modelName === 'Comment') {
@@ -137,100 +97,11 @@ exports.updateOne = (Model) =>
 
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
+    // console.log(req.body);
     // console.log(Model);
     // console.log(Model.modelName);
 
-    // Create slug Field
-    if (Model !== 'User' && req.body.name) {
-      req.body.slug = slugify(req.body.name, { lower: true });
-    }
-
-    // Check if Category Exist Before Creating Subcategory
-    if (Model.modelName === 'Subcategory') {
-      // console.log(req.body.category);
-
-      const category = await Category.findById(req.body.category);
-      if (!category) {
-        return next(
-          new AppError(`No Category with this ID: ${req.body.category}`, 404)
-        );
-      }
-    }
-
-    // check if all subcategories are belong to exsit category in req.body
-    // if (Model === 'Product' && req.body.subcategories) {
-    //   const subcategoriesIdsInBody = req.body.subcategories.split(',');
-    //   console.log(subcategoriesIdsInBody);
-
-    //   // Get all subcategories in DB that belong to category in request
-    //   const subObj = await Subcategory.find({
-    //     category: req.body.category
-    //   }).select('_id');
-
-    //   const subcategoriesIdsInDB = subObj.map((sub) => sub._id.toString());
-    //   console.log(subcategoriesIdsInDB);
-
-    //   // console.log(req.body.category);
-
-    //   const isSubcategoriesBelongToCategory = subcategoriesIdsInBody.every(
-    //     (sub) => subcategoriesIdsInDB.includes(sub)
-    //   );
-
-    //   let notIncludedValues = [];
-    //   notIncludedValues = subcategoriesIdsInBody.filter(
-    //     (value) => !subcategoriesIdsInDB.includes(value)
-    //   );
-    //   // console.log(`not includes: ${notIncludedValues}`);
-
-    //   if (!isSubcategoriesBelongToCategory) {
-    //     return next(
-    //       new AppError(
-    //         `Subcategory: ${notIncludedValues} not belong to Category!`,
-    //         400
-    //       )
-    //     );
-    //   }
-    // }
-
-    // check if all subcategories are belong to exsit category in req.body
-    // if (Model === 'Product') {
-    //   const subcategoriesIdsInBody = req.body.subcategories.split(',');
-    //   console.log(subcategoriesIdsInBody);
-
-    //   // Get all subcategories in DB that belong to category in request
-    //   const subObj = Subcategory.find({
-    //     category: req.body.category
-    //   });
-
-    //   const subcategoriesIdsInDB = subObj.map((sub) => sub._id.toString());
-    //   console.log(subcategoriesIdsInDB);
-
-    //   const isSubcategoriesBelongToCategory = subcategoriesIdsInBody.every(
-    //     (sub) => subcategoriesIdsInDB.includes(sub)
-    //   );
-
-    //   let notIncludedValues = [];
-    //   notIncludedValues = subcategoriesIdsInBody.filter(
-    //     (value) => !subcategoriesIdsInDB.includes(value)
-    //   );
-    //   // console.log(`not includes: ${notIncludedValues}`);
-
-    //   if (!isSubcategoriesBelongToCategory) {
-    //     return next(
-    //       new AppError(
-    //         `Subcategory: ${notIncludedValues} not belong to Category!`,
-    //         400
-    //       )
-    //     );
-    //   }
-    // }
-
     const doc = await Model.create(req.body);
-
-    // if (!doc && req.file) {
-    //   // delete image form cloudinary if fouded
-    //   await cloudinaryDeleteImage(req.file.public_id);
-    // }
 
     res.status(201).json({ message: 'success', date: doc });
   });

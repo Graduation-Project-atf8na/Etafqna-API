@@ -12,6 +12,7 @@ const Subcategory = require('../models/subcategoryModel');
 
 const { uploadSingleImage } = require('../utils/multer');
 const catchAsync = require('../utils/catchAsync');
+
 const {
   cloudinaryUploadImage,
   cloudinaryDeleteImage
@@ -77,6 +78,8 @@ exports.uploadImageToCloudinary = catchAsync(async (req, res, next) => {
 exports.deleteImageFromCloudinary = catchAsync(async (req, res, next) => {
   const subcategory = await Subcategory.findById(req.params.id);
 
+  // if (!subcategory) return next();
+
   const publicId = subcategory.get('image.public_id');
   // console.log(publicId);
 
@@ -105,23 +108,6 @@ exports.createFilterOpj = (req, res, next) => {
   req.filterObj = filterObject;
   next();
 };
-
-// @desc    Category ID Check Middleware
-// @route   POST /api/v1/subcategories - PATCH /api/v1/subcategories/:id
-// @access  Private
-// exports.checkCategoryId = catchAsync(async (req, res, next) => {
-//   console.log(req.body.category);
-//   if (req.body.category) {
-//     const category = await Category.findById(req.body.category);
-//     if (!category) {
-//       return next(
-//         new AppError(`No Category with this ID: ${req.body.category}`, 404)
-//       );
-//     }
-//   }
-
-//   next();
-// });
 
 // @desc    Get list of SubCategories
 // @route   GET /api/v1/subcategories/
