@@ -9,13 +9,19 @@ const {
   getSubcategory,
   updateSubcategory,
   deleteSubcategory,
-  // checkCategoryId,
 
   uploadSubcategoryImage,
   resizeImage,
   uploadImageToCloudinary,
   deleteImageFromCloudinary
 } = require('../controllers/subcategoryController');
+
+const {
+  getSubCategoryValidator,
+  createSubCategoryValidator,
+  updateSubCategoryValidator,
+  deleteSubCategoryValidator
+} = require('../utils/validators/subCategoryValidator');
 
 const authController = require('../controllers/authController');
 
@@ -26,7 +32,10 @@ router
   .route('/')
   .get(createFilterOpj, getAllSubcategories)
   .post(
+    authController.protect,
+    authController.restrictTo('admin'),
     uploadSubcategoryImage,
+    createSubCategoryValidator,
     resizeImage,
     uploadImageToCloudinary,
     setCategoryIdToBody,
@@ -35,19 +44,20 @@ router
 
 router
   .route('/:id')
-  .get(getSubcategory)
+  .get(getSubCategoryValidator, getSubcategory)
   .patch(
     authController.protect,
     authController.restrictTo('admin'),
     uploadSubcategoryImage,
+    updateSubCategoryValidator,
     resizeImage,
     uploadImageToCloudinary,
-    // checkCategoryId,
     updateSubcategory
   )
   .delete(
     authController.protect,
     authController.restrictTo('admin'),
+    deleteSubCategoryValidator,
     deleteImageFromCloudinary,
     deleteSubcategory
   );
