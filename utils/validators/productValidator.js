@@ -113,7 +113,9 @@ exports.createProductValidator = [
 
           if (!checker(subCategoriesIdsInBody, subCategoriesIdsInDB)) {
             return Promise.reject(
-              new Error(`${notIncludedValues} not belong to category`)
+              new Error(
+                `Subcategories: (${notIncludedValues}) not belong to This Category`
+              )
             );
           }
         }

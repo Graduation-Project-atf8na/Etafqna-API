@@ -223,8 +223,32 @@ exports.addUserToBody = (req, res, next) => {
   next();
 };
 
-exports.addCategoryToBody = (req, res, next) => {
+// Nested Route
+
+// Post /api/v1/categories/:categoryId/subcategories
+// while creating Subcategory form Category
+exports.addCategoryIdToBody = (req, res, next) => {
   if (!req.body.category) req.body.category = req.params.categoryId;
+  next();
+};
+
+// To get all Products of a specific....
+exports.createFilterOpj = (req, res, next) => {
+  let filterObject = {};
+  // for nested route to get all products of a specific category
+  // Get /api/v1/categories/:categoryId/products
+  if (req.params.categoryId) filterObject = { category: req.params.categoryId };
+
+  // for nested route to get all products of a specific subcategory
+  // Get /api/v1/subcategories/:subcategoryId/products
+  if (req.params.subcategoryId)
+    filterObject = { subcategories: req.params.subcategoryId };
+
+  // for nested route to get all products of a specific user
+  // Get /api/v1/users/:userId/products
+  if (req.params.userId) filterObject = { user: req.params.userId };
+
+  req.filterObj = filterObject;
   next();
 };
 

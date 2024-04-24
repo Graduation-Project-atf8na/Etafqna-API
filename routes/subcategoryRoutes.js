@@ -28,6 +28,10 @@ const authController = require('../controllers/authController');
 // mergeParams: allow us to access parameters on other routes
 const router = express.Router({ mergeParams: true });
 
+// Nested Route
+// Enable Create Subcategory /Get All Subcategories in Category
+router.use('/:subcategoryId/products', require('./productRoutes'));
+
 router
   .route('/')
   .get(createFilterOpj, getAllSubcategories)
