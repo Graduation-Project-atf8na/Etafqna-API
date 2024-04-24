@@ -27,6 +27,7 @@ const router = express.Router();
 // Nested Route
 // Enable Create Subcategory /Get All Subcategories in Category
 router.use('/:categoryId/subcategories', subCategoryRoute);
+router.use('/:categoryId/products', require('./productRoutes'));
 
 router.route('/').get(getAllCategories).post(
   // Auth

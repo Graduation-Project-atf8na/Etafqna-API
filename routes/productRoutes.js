@@ -6,8 +6,11 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
+
   addUserToBody,
-  addCategoryToBody,
+  addCategoryIdToBody,
+  createFilterOpj,
+
   handleProductImages,
   resizeProductImages,
   uploadImageCoverToCloudinary,
@@ -25,17 +28,22 @@ const {
 
 const authController = require('../controllers/authController');
 
-const router = express.Router();
+// mergeParams: allow us to access parameters on other routes
+const router = express.Router({ mergeParams: true });
 
-router.route('/').get(getAllProducts).post(
+router.route('/').get(createFilterOpj, getAllProducts).post(
   authController.protect,
-
   handleProductImages,
+
   addUserToBody,
+  addCategoryIdToBody,
+
   createProductValidator,
+
   resizeProductImages,
   uploadImageCoverToCloudinary,
   uploadImagesToCloudinary,
+
   createProduct
 );
 
@@ -47,7 +55,7 @@ router
     authController.restrictTo('user', 'admin'),
     handleProductImages,
 
-    addCategoryToBody,
+    addCategoryIdToBody,
     updateProductValidator,
 
     resizeProductImages,
