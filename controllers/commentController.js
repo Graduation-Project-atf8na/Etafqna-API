@@ -3,19 +3,24 @@ const Comment = require('../models/commentModel');
 
 // Nested route
 // GET /api/v1/products/:productId/comments
-// exports.createFilterObj = (req, res, next) => {
-//   let filterObject = {};
-//   if (req.params.productId) filterObject = { product: req.params.productId };
-//   req.filterObj = filterObject;
-//   next();
-// };
+exports.createFilterObj = (req, res, next) => {
+  let filterObject = {};
+  if (req.params.productId) filterObject = { product: req.params.productId };
+  req.filterObj = filterObject;
+  next();
+};
 
 // Nested route (Create)
-// exports.setProductIdAndUserIdToBody = (req, res, next) => {
-//   if (!req.body.product) req.body.product = req.params.productId;
-//   if (!req.body.user) req.body.user = req.user._id;
-//   next();
-// };
+// POST /api/v1/products/:productId/comments
+exports.setProductIdToBody = (req, res, next) => {
+  if (!req.body.product) req.body.product = req.params.productId;
+  next();
+};
+
+exports.setUserIdToBody = (req, res, next) => {
+  if (!req.body.user) req.body.user = req.user.id;
+  next();
+};
 
 // @desc    Get list of comments
 // @route   GET /api/v1/comments
