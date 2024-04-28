@@ -5,23 +5,26 @@ const {
   getComment,
   createComment,
   updateComment,
-  deleteComment
+  deleteComment,
+
+  // Nested route
+  createFilterObj,
+  setProductIdToBody,
+  setUserIdToBody
 } = require('../controllers/commentController');
 
 const authController = require('../controllers/authController');
 
-const router = express.Router();
-
-// Nested Route
-// Enable Create Comment /Get All Comments in Product
-// router.use('/:productId/comments', productRoute);
+const router = express.Router({ mergeParams: true });
 
 router
   .route('/')
-  .get(getAllComments)
+  .get(createFilterObj, getAllComments)
   .post(
     authController.protect,
-    authController.restrictTo('user'),
+    authController.restrictTo('user', 'admin'),
+    setProductIdToBody,
+    setUserIdToBody,
     createComment
   );
 
@@ -31,6 +34,7 @@ router
   .patch(
     authController.protect,
     authController.restrictTo('user'),
+    setUserIdToBody,
     updateComment
   )
   .delete(
