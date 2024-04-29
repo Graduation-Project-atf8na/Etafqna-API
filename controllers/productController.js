@@ -289,7 +289,7 @@ exports.getNearByProducts = catchAsync(async (req, res, next) => {
     return next(new AppError('Please provide locations', 400));
   }
 
-  console.log(locations);
+  // console.log(locations);
 
   const products = await Product.find({
     location: {
@@ -298,7 +298,7 @@ exports.getNearByProducts = catchAsync(async (req, res, next) => {
           type: 'Point',
           coordinates: locations
         },
-        $ditanceMultiplier: 0.001,
+        // $ditanceMultiplier: 0.001,
         $maxDistance: 10000
       }
     }
