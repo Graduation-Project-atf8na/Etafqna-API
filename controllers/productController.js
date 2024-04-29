@@ -218,7 +218,7 @@ exports.checkSubcategoriesBelongToCategory = catchAsync(
   }
 );
 
-exports.addUserToBody = (req, res, next) => {
+exports.addUserIdToBody = (req, res, next) => {
   req.body.user = req.user.id;
   next();
 };
@@ -251,6 +251,67 @@ exports.createFilterOpj = (req, res, next) => {
   req.filterObj = filterObject;
   next();
 };
+
+// @desc    Get list of Following Products
+// @route   GET /api/v1/products/following
+// @access  Private
+exports.getFollowingProducts = catchAsync(async (req, res, next) => {
+  const products = await Product.find({ user: { $in: req.user.following } });
+
+  res.status(200).json({
+    status: 'success',
+    results: products.length,
+    data: {
+      products
+    }
+  });
+});
+
+// @desc    Get list of NearBy Products
+// @route   GET /api/v1/products/nearby
+// @access  Private
+exports.getNearByProducts = catchAsync(async (req, res, next) => {
+  let locations = [];
+
+  if (req.query.locations) {
+    // eslint-disable-next-line prefer-destructuring
+    locations = req.query.locations;
+    // casting to array
+    locations = locations.split(',').map((el) => parseFloat(el));
+
+    // using longitude and latitude
+    // const { log, lat } = req.query;
+    // locations = [log, lat];
+  } else if (req.user.locations) {
+    locations = JSON.parse(req.user.locations);
+    locations = locations.coordinates;
+  } else {
+    return next(new AppError('Please provide locations', 400));
+  }
+
+  console.log(locations);
+
+  const products = await Product.find({
+    location: {
+      $near: {
+        $geometry: {
+          type: 'Point',
+          coordinates: locations
+        },
+        $ditanceMultiplier: 0.001,
+        $maxDistance: 10000
+      }
+    }
+  });
+
+  res.status(200).json({
+    status: 'success',
+    results: products.length,
+    data: {
+      products
+    }
+  });
+});
 
 // @desc    Get list of Products
 // @route   GET /api/v1/products/
