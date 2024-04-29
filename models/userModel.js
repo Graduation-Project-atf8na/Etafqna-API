@@ -21,17 +21,15 @@ const userSchema = new mongoose.Schema(
       validate: [validator.isMobilePhone, 'Please provide a valid phone number']
     },
     image: String,
-    locations: [
-      {
-        type: {
-          type: String,
-          default: 'Point',
-          enum: ['Point']
-        },
-        coordinates: [Number],
-        address: String
-      }
-    ],
+    locations: {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point']
+      },
+      coordinates: [Number],
+      address: String
+    },
     following: [
       {
         type: mongoose.Schema.ObjectId,
