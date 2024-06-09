@@ -87,7 +87,7 @@ exports.uploadImageCoverToCloudinary = catchAsync(async (req, res, next) => {
   }
 
   //2) Upload Image to Cloudinary
-  const result = await cloudinaryUploadImage(imageCoverPath);
+  const result = await cloudinaryUploadImage(imageCoverPath, 'product_Images');
   // console.log(result);
 
   // 3) save image name to req.body to save in database
@@ -128,7 +128,10 @@ exports.uploadImagesToCloudinary = catchAsync(async (req, res, next) => {
   await Promise.all(
     req.imagePaths.map(async (img) => {
       // await limit(async () => {
-      const result = await cloudinaryUploadImage(`public/img/products/${img}`);
+      const result = await cloudinaryUploadImage(
+        `public/img/products/${img}`,
+        'product_Images'
+      );
       // console.log(result);
 
       fs.unlinkSync(`public/img/products/${img}`);

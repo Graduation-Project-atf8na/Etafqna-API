@@ -8,9 +8,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const cloudinaryUploadImage = asyncHandler(async (fileToUpload) => {
+const cloudinaryUploadImage = asyncHandler(async (fileToUpload, folder) => {
   const data = await cloudinary.uploader.upload(fileToUpload, {
-    resource_type: 'auto'
+    resource_type: 'auto',
+    folder: folder
   });
 
   return data;
