@@ -60,7 +60,7 @@ exports.uploadImageToCloudinary = catchAsync(async (req, res, next) => {
   }
 
   //2) Upload Image to Cloudinary
-  const result = await cloudinaryUploadImage(imagePath);
+  const result = await cloudinaryUploadImage(imagePath, 'subcategory_Images');
   // console.log(result);
 
   // 3) save image name to req.body to save in database
