@@ -274,35 +274,35 @@ exports.getFollowingProducts = catchAsync(async (req, res, next) => {
 // @route   GET /api/v1/products/nearby
 // @access  Private
 exports.getNearByProducts = catchAsync(async (req, res, next) => {
-  let locations = [];
+  let location = [];
 
-  if (req.query.locations) {
+  if (req.query.location) {
     // eslint-disable-next-line prefer-destructuring
-    locations = req.query.locations;
+    location = req.query.location;
     // casting to array
-    locations = locations.split(',').map((el) => parseFloat(el));
+    location = location.split(',').map((el) => parseFloat(el));
 
     // using longitude and latitude
     // const { log, lat } = req.query;
-    // locations = [log, lat];
-  } else if (req.user.locations) {
-    locations = JSON.parse(req.user.locations);
-    locations = locations.coordinates;
+    // location = [log, lat];
+  } else if (req.user.location) {
+    location = JSON.parse(req.user.location);
+    //location = location.coordinates;
   } else {
     return next(new AppError('Please provide locations', 400));
   }
 
-  // console.log(locations);
+  // console.log(location);
 
   const products = await Product.find({
     location: {
       $near: {
         $geometry: {
           type: 'Point',
-          coordinates: locations
+          coordinates: location
         },
         // $ditanceMultiplier: 0.001,
-        $maxDistance: 10000
+        $maxDistance: 10000 // 10km
       }
     }
   });
