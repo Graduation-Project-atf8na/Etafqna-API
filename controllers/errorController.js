@@ -55,13 +55,15 @@ const sendErrorProd = (err, req, res) => {
   // A) API
   if (req.originalUrl.startsWith('/api')) {
     // A) Operational, trusted error: send message to client
-    // console.log(err);
+    //console.log(err);
+
     if (err.isOperational) {
       return res.status(err.statusCode).json({
         status: err.status,
         message: err.message
       });
     }
+
     // B) Programming or other unknown error: don't leak error details
     // 1) Log error
     // console.error('ERROR 💥', err);
@@ -69,7 +71,7 @@ const sendErrorProd = (err, req, res) => {
     // 2) Send generic message
     return res.status(500).json({
       status: 'error',
-      message: 'Something went very wrong!'
+      message: 'Something went very wrong!🛑'
     });
   }
 
@@ -82,11 +84,13 @@ const sendErrorProd = (err, req, res) => {
       msg: err.message
     });
   }
+
   // B) Programming or other unknown error: don't leak error details
   // 1) Log error
   // console.error('ERROR 💥', err);
+
   // 2) Send generic message
-  return res.status(err.statusCode).render('error', {
+  return res.status(500).render('error', {
     title: 'Something went wrong!',
     msg: 'Please try again later.'
   });
@@ -99,7 +103,26 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
-    let error = { ...err }; // creating a copy of the error object
+    //let error = { ...err }; // creating a copy of the error object
+
+    // eslint-disable-next-line prefer-object-spread
+    let error = Object.assign({}, err);
+
+    // Manually copy non-enumerable properties
+    Object.defineProperty(error, 'name', {
+      value: err.name,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    });
+
+    Object.defineProperty(error, 'stack', {
+      value: err.stack,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    });
+
     error.message = err.message;
 
     if (error.name === 'CastError') {
