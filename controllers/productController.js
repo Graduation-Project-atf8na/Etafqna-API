@@ -309,7 +309,7 @@ exports.getNearByProducts = catchAsync(async (req, res, next) => {
           coordinates: location
         },
         // $ditanceMultiplier: 0.001,
-        $maxDistance: parseInt(req.query.maxDistance, 10) * 1000 || 500000
+        $maxDistance: parseInt(req.query.maxDistance, 10) * 1000 || 500000 // 500km
       }
     }
   });

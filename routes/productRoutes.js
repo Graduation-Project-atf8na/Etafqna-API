@@ -8,7 +8,7 @@ const {
   deleteProduct,
 
   getFollowingProducts,
-
+  getNearByProducts,
   addCategoryIdToBody,
   createFilterOpj,
 
@@ -38,6 +38,8 @@ const router = express.Router({ mergeParams: true });
 router.use('/:productId/comments', require('./commentRoutes'));
 
 router.use('/following', authController.protect, getFollowingProducts);
+
+router.use('/nearby', authController.protect, getNearByProducts);
 
 router.route('/').get(createFilterOpj, getAllProducts).post(
   authController.protect,

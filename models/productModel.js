@@ -24,12 +24,6 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'Product Price is required']
     },
-    // options: [
-    //   {
-    //     type: String,
-    //     enum: ['sell', 'exchange', 'donate']
-    //   }
-    // ],
     donate: {
       type: Boolean,
       default: false
@@ -72,7 +66,7 @@ const productSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.ObjectId,
         ref: 'SubCategory',
-        required: [true, 'Product must be belong Atleast to one subcategory']
+        required: [true, 'Product must be belong at least to one subcategory']
       }
     ]
   },
