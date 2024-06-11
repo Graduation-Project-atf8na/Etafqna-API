@@ -221,14 +221,14 @@ exports.checkSubcategoriesBelongToCategory = catchAsync(
   }
 );
 
-exports.addUserIdToBody = (req, res, next) => {
-  // Adding Product Owner to the body of the request to Create Product
-  req.body.owner = req.user.id;
-  // Adding Product location according to the Owner location
-  req.body.location = req.user.location;
+// exports.addUserIdToBody = (req, res, next) => {
+//   // Adding Product Owner to the body of the request to Create Product
+//   req.body.owner = req.user.id;
+//   // Adding Product location according to the Owner location
+//   //req.body.location = req.user.location;
 
-  next();
-};
+//   next();
+// };
 
 // Nested Route
 
@@ -264,6 +264,55 @@ exports.createFilterOpj = (req, res, next) => {
 // @access  Private
 exports.getFollowingProducts = catchAsync(async (req, res, next) => {
   const products = await Product.find({ user: { $in: req.user.following } });
+
+  res.status(200).json({
+    status: 'success',
+    results: products.length,
+    data: {
+      products
+    }
+  });
+});
+
+// @desc    Get list of NearBy Products
+// @route   GET /api/v1/products/nearby
+// @access  Private
+exports.getNearByProducts = catchAsync(async (req, res, next) => {
+  let location = [];
+  // console.log(parseInt(req.query.maxDistance));
+
+  if (req.query.location) {
+    // eslint-disable-next-line prefer-destructuring
+    location = req.query.location;
+    // casting to array
+    location = location.split(',').map((el) => parseFloat(el));
+
+    // using longitude and latitude
+    // const { log, lat } = req.query;
+    // locations = [log, lat];
+  } else if (req.user.location) {
+    // console.log('user lacation', req.user.location);
+    // location = JSON.parse(req.user.location);
+    location = req.user.location.coordinates;
+    // console.log('Near By location', location);
+  } else {
+    return next(new AppError('Please provide locations', 400));
+  }
+
+  // console.log(locations);
+
+  const products = await Product.find({
+    location: {
+      $near: {
+        $geometry: {
+          type: 'Point',
+          coordinates: location
+        },
+        // $ditanceMultiplier: 0.001,
+        $maxDistance: parseInt(req.query.maxDistance, 10) * 1000 || 500000
+      }
+    }
+  });
 
   res.status(200).json({
     status: 'success',

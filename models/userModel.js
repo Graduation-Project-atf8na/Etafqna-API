@@ -20,7 +20,11 @@ const userSchema = new mongoose.Schema(
       unique: true,
       validate: [validator.isMobilePhone, 'Please provide a valid phone number']
     },
-    image: String,
+    bio: String,
+    image: {
+      type: Map,
+      of: String
+    },
     location: {
       type: {
         type: String,

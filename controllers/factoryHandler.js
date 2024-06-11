@@ -101,6 +101,11 @@ exports.createOne = (Model) =>
     // console.log(Model);
     // console.log(Model.modelName);
 
+    // Adding Product Owner to the body of the request to Create Product
+    if (Model.modelName === 'Product') {
+      req.body.owner = req.user.id;
+    }
+
     const doc = await Model.create(req.body);
 
     res.status(201).json({ message: 'success', date: doc });
