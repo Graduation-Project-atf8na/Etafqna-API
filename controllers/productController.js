@@ -253,7 +253,7 @@ exports.createFilterOpj = (req, res, next) => {
 
   // for nested route to get all products of a specific user
   // Get /api/v1/users/:userId/products
-  if (req.params.userId) filterObject = { user: req.params.userId };
+  if (req.params.userId) filterObject = { owner: req.params.userId };
 
   req.filterObj = filterObject;
   next();
