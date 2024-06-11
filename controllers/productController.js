@@ -222,7 +222,11 @@ exports.checkSubcategoriesBelongToCategory = catchAsync(
 );
 
 exports.addUserIdToBody = (req, res, next) => {
-  req.body.user = req.user.id;
+  // Adding Product Owner to the body of the request to Create Product
+  req.body.owner = req.user.id;
+  // Adding Product location according to the Owner location
+  req.body.location = req.user.location;
+
   next();
 };
 

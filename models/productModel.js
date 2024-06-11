@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+// const { bool } = require('sharp');
 
 const productSchema = new mongoose.Schema(
   {
@@ -23,6 +24,20 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'Product Price is required']
     },
+    // options: [
+    //   {
+    //     type: String,
+    //     enum: ['sell', 'exchange', 'donate']
+    //   }
+    // ],
+    donate: {
+      type: Boolean,
+      default: false
+    },
+    exchange: {
+      type: Boolean,
+      default: false
+    },
     imageCover: {
       type: Map,
       of: String,
@@ -34,7 +49,7 @@ const productSchema = new mongoose.Schema(
         of: String
       }
     ],
-    user: {
+    owner: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
       required: [true, 'Product must be belong to a user']
@@ -57,7 +72,7 @@ const productSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.ObjectId,
         ref: 'SubCategory',
-        required: [true, 'Product must be belong to subcategory']
+        required: [true, 'Product must be belong Atleast to one subcategory']
       }
     ]
   },
