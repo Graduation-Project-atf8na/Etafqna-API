@@ -8,7 +8,6 @@ const {
   deleteProduct,
 
   getFollowingProducts,
-  getNearByProducts,
 
   addUserIdToBody,
   addCategoryIdToBody,
@@ -44,13 +43,6 @@ router.use(
   authController.protect,
   addUserIdToBody,
   getFollowingProducts
-);
-
-router.use(
-  '/nearby',
-  authController.protect,
-  addUserIdToBody,
-  getNearByProducts
 );
 
 router.route('/').get(createFilterOpj, getAllProducts).post(

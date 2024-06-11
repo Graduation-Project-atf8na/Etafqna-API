@@ -1,6 +1,68 @@
+const fs = require('fs');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+const sharp = require('sharp');
+
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const User = require('../models/userModel');
+
+const { uploadSingleImage } = require('../utils/multer');
+
+const {
+  cloudinaryUploadImage,
+  cloudinaryDeleteImage
+} = require('../utils/cloudinary');
+
+exports.uploadUserImage = uploadSingleImage('image');
+
+// Image Processing
+const fileName = `user-${uuidv4()}-${Date.now()}.jpeg`;
+const imagePath = path.join(__dirname, `../public/img/users/${fileName}`);
+
+exports.resizeImage = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+
+  await sharp(req.file.buffer)
+    .resize(600, 600)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${fileName}`);
+
+  // save image name to req.body to save in database
+  // If Cloudinary is not used
+  // req.body.image = fileName;
+
+  next();
+});
+
+exports.uploadImageToCloudinary = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+
+  // 1) Check if Image Exist When Updating
+  if (req.user.id) {
+    const user = await User.findById(req.user.id);
+    const publicId = user.get('image.public_id');
+    // console.log(publicId);
+
+    // Delete Image from Cloudinary
+    if (publicId) await cloudinaryDeleteImage(publicId);
+  }
+
+  // 2) Upload Image to Cloudinary
+  const result = await cloudinaryUploadImage(imagePath, 'user_images');
+
+  // 3) Save Image URL and Public ID to req.body
+  req.body.image = {
+    url: result.secure_url,
+    public_id: result.public_id
+  };
+
+  // 4) Delete the image from local server
+  fs.unlinkSync(imagePath);
+
+  next();
+});
 
 exports.getMe = (req, res, next) => {
   // The user ID is available in req.user.id
@@ -75,7 +137,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     'name',
     'email',
     'phone',
-    'photo',
+    'image',
     'location'
   );
   // 3) Update user document

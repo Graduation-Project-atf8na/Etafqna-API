@@ -56,7 +56,8 @@ exports.createProductValidator = [
     ),
 
   check('subcategories')
-    .optional()
+    .notEmpty()
+    .withMessage('Product must be belong to a subcategory')
     // .isMongoId()
     // .withMessage('Invalid ID formate For Testing')
     .custom((subcategoriesIds) =>
@@ -135,14 +136,6 @@ exports.createProductValidator = [
   //         req.body.user = user._id;
   //       })
   //     ),
-
-  // check('location')
-  //   .optional()
-  //   // .isArray()
-  //   // .withMessage('Location should be array')
-  //   .isLength({ min: 2 })
-  //   .withMessage('Location should have 2 elements'),
-  // check('location.*').isNumeric().withMessage('Location should be number'),
 
   validatorMiddleware
 ];
