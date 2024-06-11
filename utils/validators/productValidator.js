@@ -136,13 +136,13 @@ exports.createProductValidator = [
   //       })
   //     ),
 
-  check('location')
-    .optional()
-    .isArray()
-    .withMessage('Location should be array')
-    .isLength({ min: 2 })
-    .withMessage('Location should have 2 elements'),
-  check('location.*').isNumeric().withMessage('Location should be number'),
+  // check('location')
+  //   .optional()
+  //   // .isArray()
+  //   // .withMessage('Location should be array')
+  //   .isLength({ min: 2 })
+  //   .withMessage('Location should have 2 elements'),
+  // check('location.*').isNumeric().withMessage('Location should be number'),
 
   validatorMiddleware
 ];

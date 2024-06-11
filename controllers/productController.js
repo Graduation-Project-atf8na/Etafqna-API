@@ -222,7 +222,11 @@ exports.checkSubcategoriesBelongToCategory = catchAsync(
 );
 
 exports.addUserIdToBody = (req, res, next) => {
-  req.body.user = req.user.id;
+  // Adding Product Owner to the body of the request to Create Product
+  req.body.owner = req.user.id;
+  // Adding Product location according to the Owner location
+  req.body.location = req.user.location;
+
   next();
 };
 
@@ -274,20 +278,23 @@ exports.getFollowingProducts = catchAsync(async (req, res, next) => {
 // @route   GET /api/v1/products/nearby
 // @access  Private
 exports.getNearByProducts = catchAsync(async (req, res, next) => {
-  let locations = [];
+  let location = [];
+  // console.log(parseInt(req.query.maxDistance));
 
-  if (req.query.locations) {
+  if (req.query.location) {
     // eslint-disable-next-line prefer-destructuring
-    locations = req.query.locations;
+    location = req.query.location;
     // casting to array
-    locations = locations.split(',').map((el) => parseFloat(el));
+    location = location.split(',').map((el) => parseFloat(el));
 
     // using longitude and latitude
     // const { log, lat } = req.query;
     // locations = [log, lat];
-  } else if (req.user.locations) {
-    locations = JSON.parse(req.user.locations);
-    locations = locations.coordinates;
+  } else if (req.user.location) {
+    // console.log('user lacation', req.user.location);
+    // location = JSON.parse(req.user.location);
+    location = req.user.location.coordinates;
+    // console.log('Near By location', location);
   } else {
     return next(new AppError('Please provide locations', 400));
   }
@@ -299,10 +306,10 @@ exports.getNearByProducts = catchAsync(async (req, res, next) => {
       $near: {
         $geometry: {
           type: 'Point',
-          coordinates: locations
+          coordinates: location
         },
         // $ditanceMultiplier: 0.001,
-        $maxDistance: 10000
+        $maxDistance: parseInt(req.query.maxDistance, 10) * 1000 || 500000
       }
     }
   });
