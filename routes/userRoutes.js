@@ -51,9 +51,19 @@ router
 
 router
   .route('/follow/:id')
-  .get(authController.protect, userController.getFollowingUser)
+  //.get(authController.protect, userController.getFollowingUser)
   .patch(authController.protect, userController.followUser)
   .delete(authController.protect, userController.unfollowUser);
+
+router
+  .route('/favorite')
+  .get(authController.protect, userController.getAllFavoriteItems);
+
+router
+  .route('/favorite/:id')
+  //.get(authController.protect, userController.getFavoriteItem)
+  .patch(authController.protect, userController.favoriteItem)
+  .delete(authController.protect, userController.unfavoriteItem);
 
 router
   .route('/')

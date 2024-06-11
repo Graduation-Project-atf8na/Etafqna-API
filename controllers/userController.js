@@ -161,7 +161,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
-  await User.findByIdAndDelete(req.user.id);
+  // Soft delete (Deactivate Account)
+  await User.findByIdAndUpdate(req.user.id, { active: false });
 
   res.status(204).json({
     status: 'success',
@@ -175,45 +176,44 @@ exports.getAllFollowingUsers = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     length: user.following.length,
-    data: {
+    data:
       // eslint-disable-next-line no-shadow
-      following: user.following.map((user) => ({
+      user.following.map((user) => ({
         id: user._id,
         name: user.name,
         products: user.products,
         image: user.image,
         phone: user.phone
       }))
-    }
   });
 });
 
-exports.getFollowingUser = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id).populate('following');
+// exports.getFollowingUser = catchAsync(async (req, res, next) => {
+//   const user = await User.findById(req.user.id).populate('following');
 
-  // Get the user that is being followed
-  const followingUser = user.following.find(
-    // eslint-disable-next-line no-shadow
-    (user) => user.id === req.params.id
-  );
+//   // Get the user that is being followed
+//   const followingUser = user.following.find(
+//     // eslint-disable-next-line no-shadow
+//     (user) => user.id === req.params.id
+//   );
 
-  if (!followingUser) {
-    return next(
-      new AppError('No user found with that ID in your following', 404)
-    );
-  }
+//   if (!followingUser) {
+//     return next(
+//       new AppError('No user found with that ID in your following', 404)
+//     );
+//   }
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      id: followingUser._id,
-      name: followingUser.name,
-      products: followingUser.products,
-      image: followingUser.image,
-      phone: followingUser.phone
-    }
-  });
-});
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       id: followingUser._id,
+//       name: followingUser.name,
+//       products: followingUser.products,
+//       image: followingUser.image,
+//       phone: followingUser.phone
+//     }
+//   });
+// });
 
 exports.followUser = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user.id);
@@ -246,6 +246,76 @@ exports.unfollowUser = catchAsync(async (req, res, next) => {
   user.following = user.following.filter(
     (id) => id.toString() !== req.params.id
   );
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user
+    }
+  });
+});
+
+exports.getAllFavoriteItems = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id).populate('favItems');
+
+  res.status(200).json({
+    status: 'success',
+    length: user.favItems.length,
+    data: user.favItems
+  });
+});
+
+// exports.getFavoriteItem = catchAsync(async (req, res, next) => {
+//   const user = await User.findById(req.user.id).populate('favItems');
+
+//   // Get the product that is being followed
+//   const favoriteProduct = user.favItems.find(
+//     (product) => product.id === req.params.id
+//   );
+
+//   if (!favoriteProduct) {
+//     return next(
+//       new AppError('No product found with that ID in your favorite', 404)
+//     );
+//   }
+
+//   res.status(200).json({
+//     status: 'success',
+//     data: favoriteProduct
+//   });
+// });
+
+exports.favoriteItem = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  // Check if user is already has the product in favorite
+  if (user.favItems.includes(req.params.id)) {
+    return next(new AppError('You have already this product', 400));
+  }
+
+  user.favItems.push(req.params.id);
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user
+    }
+  });
+});
+
+exports.unfavoriteItem = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  // Check if user is not already has the product in favorite
+  if (!user.favItems.includes(req.params.id)) {
+    return next(new AppError('You do not have this product', 400));
+  }
+
+  // Get the index of the product to unfavorite
+  user.favItems = user.favItems.filter((id) => id.toString() !== req.params.id);
+
   await user.save({ validateBeforeSave: false });
 
   res.status(200).json({
