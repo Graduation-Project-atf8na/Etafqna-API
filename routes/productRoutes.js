@@ -9,7 +9,6 @@ const {
 
   getFollowingProducts,
 
-  addUserIdToBody,
   addCategoryIdToBody,
   createFilterOpj,
 
@@ -38,18 +37,12 @@ const router = express.Router({ mergeParams: true });
 // Get All Comments in Product, Create Comment in Product
 router.use('/:productId/comments', require('./commentRoutes'));
 
-router.use(
-  '/following',
-  authController.protect,
-  addUserIdToBody,
-  getFollowingProducts
-);
+router.use('/following', authController.protect, getFollowingProducts);
 
 router.route('/').get(createFilterOpj, getAllProducts).post(
   authController.protect,
   handleProductImages,
 
-  addUserIdToBody,
   addCategoryIdToBody,
 
   createProductValidator,
