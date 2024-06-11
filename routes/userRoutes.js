@@ -9,6 +9,11 @@ const {
   uploadImageToCloudinary
 } = require('../controllers/userController');
 
+const {
+  createFilterOpj,
+  getAllProducts
+} = require('../controllers/productController');
+
 const router = express.Router({ mergeParams: true });
 
 router.use('/:userId/products', require('./productRoutes'));
@@ -19,6 +24,15 @@ router.get(
   userController.getMe,
   userController.getUser
 );
+
+router.get(
+  '/myProducts',
+  authController.protect,
+  userController.getMyProducts,
+  createFilterOpj,
+  getAllProducts
+);
+
 router.patch(
   '/updateMe',
   authController.protect,
@@ -28,6 +42,7 @@ router.patch(
   uploadImageToCloudinary,
   userController.updateMe
 );
+
 router.delete('/deleteMe', authController.protect, userController.deleteMe);
 
 router

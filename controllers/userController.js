@@ -70,6 +70,12 @@ exports.getMe = (req, res, next) => {
   next();
 };
 
+exports.getMyProducts = catchAsync(async (req, res, next) => {
+  // The user ID is available in req.user.id
+  req.params.userId = req.user.id;
+  next();
+});
+
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find();
 
