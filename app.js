@@ -14,7 +14,6 @@ const userRouter = require('./routes/userRoutes');
 const categoryRouter = require('./routes/categoryRoutes');
 const subcategoryRouter = require('./routes/subcategoryRoutes');
 const productRouter = require('./routes/productRoutes');
-const commentRouter = require('./routes/commentRoutes');
 
 const app = express();
 
@@ -79,7 +78,6 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/categories', categoryRouter);
 app.use('/api/v1/subcategories', subcategoryRouter);
 app.use('/api/v1/products', productRouter);
-app.use('/api/v1/comments', commentRouter);
 
 // Test Route
 app.get('/api/v1/test', (req, res) => {

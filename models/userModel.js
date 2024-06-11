@@ -6,21 +6,28 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Please tell us your name!']
+      trim: true,
+      minlength: [3, 'Too short name'],
+      maxlength: [50, 'Too long name'],
+      required: [true, 'Please tell us your name']
     },
     email: {
       type: String,
-      required: [true, 'Please provide your email'],
       unique: true,
       lowercase: true,
-      validate: [validator.isEmail, 'Please provide a valid email']
+      validate: [validator.isEmail, 'Please provide a valid email'],
+      required: [true, 'Please provide your email']
     },
     phone: {
       type: String,
       unique: true,
       validate: [validator.isMobilePhone, 'Please provide a valid phone number']
     },
-    bio: String,
+    bio: {
+      type: String,
+      trim: true,
+      maxlength: [500, 'Bio must be less than 500 characters']
+    },
     image: {
       type: Map,
       of: String
@@ -46,12 +53,6 @@ const userSchema = new mongoose.Schema(
         ref: 'Product'
       }
     ],
-    // products: [
-    //   {
-    //     type: mongoose.Schema.ObjectId,
-    //     ref: 'Product'
-    //   }
-    // ],
     active: {
       type: Boolean,
       default: true,

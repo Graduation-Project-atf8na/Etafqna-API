@@ -5,20 +5,20 @@ const productSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
       trim: true,
       minlength: [3, 'Too short Product Title'],
-      maxlength: [100, 'Too long Product Title']
+      maxlength: [100, 'Too long Product Title'],
+      required: true
     },
     slug: {
       type: String,
-      required: true,
-      lowercase: true
+      lowercase: true,
+      required: true
     },
     description: {
       type: String,
-      required: [true, 'Product Description is required'],
-      minlength: [20, 'Too short product Description']
+      minlength: [20, 'Too short product Description'],
+      required: [true, 'Product Description is required']
     },
     price: {
       type: Number,
@@ -73,20 +73,11 @@ const productSchema = new mongoose.Schema(
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
-productSchema.virtual('comments', {
-  ref: 'Comment',
-  localField: '_id',
-  foreignField: 'product'
-});
-
 // Mongoose Query Middleware
 productSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'category',
     select: 'name _id'
-  }).populate({
-    path: 'comments',
-    select: 'comment user -product'
   });
 
   next();

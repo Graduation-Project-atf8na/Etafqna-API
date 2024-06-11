@@ -5,10 +5,8 @@ const categorySchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Category Name required!'],
       unique: [true, 'Category must be Unique'],
-      minlength: [3, 'Too short category name'],
-      maxlength: [32, 'Too long category name']
+      required: [true, 'Category Name required!']
     },
     slug: {
       type: String,
@@ -23,11 +21,6 @@ const categorySchema = new mongoose.Schema(
     timestamps: true
   }
 );
-
-// MONGOOSE MIDDLEWARE
-// Rename image value to full path in response
-// work for getAll, getOne, Update
-//
 
 // 2- Create Model
 const CategoryModel = mongoose.model('Category', categorySchema);
