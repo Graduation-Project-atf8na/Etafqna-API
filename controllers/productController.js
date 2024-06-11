@@ -27,7 +27,7 @@ const imageCoverPath = path.join(
 
 exports.handleProductImages = uploadMultipleImages([
   { name: 'imageCover', maxCount: 1 },
-  { name: 'images', maxCount: 5 }
+  { name: 'images', maxCount: 10 }
 ]);
 
 exports.resizeProductImages = asyncHandler(async (req, res, next) => {
