@@ -173,7 +173,7 @@ exports.updateProductValidator = [
       const product = await Product.findById(val);
       //   console.log('product', product);
 
-      const userID = product.user;
+      const userID = product.owner;
       //   console.log('userID', userID);
       //   console.log('req.user._id', req.user._id);
 
@@ -293,7 +293,7 @@ exports.deleteProductValidator = [
       const product = await Product.findById(val);
       //   console.log('product', product);
 
-      const userID = product.user;
+      const userID = product.owner;
       //   console.log('userID', userID);
       //   console.log('req.user._id', req.user._id);
 
