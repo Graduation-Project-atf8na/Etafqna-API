@@ -65,7 +65,7 @@ const productSchema = new mongoose.Schema(
     subcategories: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: 'SubCategory',
+        ref: 'Subcategory',
         required: [true, 'Product must be belong at least to one subcategory']
       }
     ]
@@ -78,7 +78,15 @@ productSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'category',
     select: 'name _id'
-  });
+  })
+    .populate({
+      path: 'owner',
+      select: 'name _id'
+    })
+    .populate({
+      path: 'subcategories',
+      select: 'name _id -category'
+    });
 
   next();
 });
