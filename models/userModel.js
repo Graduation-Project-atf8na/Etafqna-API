@@ -30,7 +30,11 @@ const userSchema = new mongoose.Schema(
     },
     image: {
       type: Map,
-      of: String
+      of: String,
+      default: {
+        url: 'https://res.cloudinary.com/dp3jlgjwm/image/upload/v1719171369/avatars/default_avatar_oc1d4h.jpg',
+        public_id: 'avatars/default_avatar_oc1d4h'
+      }
     },
     location: {
       type: {
