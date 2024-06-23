@@ -45,8 +45,10 @@ exports.uploadImageToCloudinary = catchAsync(async (req, res, next) => {
     const publicId = user.get('image.public_id');
     // console.log(publicId);
 
-    // Delete Image from Cloudinary
-    if (publicId) await cloudinaryDeleteImage(publicId);
+    // Delete Image from Cloudinary if it exists and not the default image
+    if (publicId && publicId !== 'avatars/default_avatar_oc1d4h') {
+      await cloudinaryDeleteImage(publicId);
+    }
   }
 
   // 2) Upload Image to Cloudinary
@@ -104,7 +106,15 @@ exports.getUser = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteUser = catchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndDelete(req.params.id);
+  // Delete Image from Cloudinary if it exists and not the default image
+  const user = await User.findById(req.params.id);
+  const publicId = user.get('image.public_id');
+
+  if (publicId && publicId !== 'avatars/default_avatar_oc1d4h') {
+    await cloudinaryDeleteImage(publicId);
+  }
+
+  await User.findByIdAndDelete(req.params.id);
 
   if (!user) {
     return next(new AppError('No user found with that ID', 404));
