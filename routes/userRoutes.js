@@ -76,6 +76,11 @@ router
 router
   .route('/:id')
   .get(userController.getUser)
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin'),
+    userController.changeRole
+  )
   .delete(
     authController.protect,
     authController.restrictTo('admin'),
