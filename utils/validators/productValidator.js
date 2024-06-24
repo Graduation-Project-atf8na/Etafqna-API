@@ -293,11 +293,15 @@ exports.deleteProductValidator = [
       const product = await Product.findById(val);
       //   console.log('product', product);
 
-      const userID = product.owner;
-      //   console.log('userID', userID);
-      //   console.log('req.user._id', req.user._id);
+      const userID = product.owner._id;
+      // console.log('userID', userID);
+      // console.log('req.user._id', req.user._id);
+      // console.log('req.user.role', req.user.role);
 
-      if (userID.toString() !== req.user._id.toString()) {
+      if (
+        userID.toString() !== req.user._id.toString() &&
+        req.user.role !== 'admin'
+      ) {
         return Promise.reject(
           new Error('You are not allowed to delete this product!')
         );
