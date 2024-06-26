@@ -16,6 +16,7 @@ const subcategoryRouter = require('./routes/subcategoryRoutes');
 const productRouter = require('./routes/productRoutes');
 
 const app = express();
+//app.set('trust proxy', 3); // Trust first 3 proxies (for Heroku)
 
 // Development logging
 if (process.env.NODE_ENV === 'development') {
@@ -36,9 +37,11 @@ app.use(
 
 // Limit requests from same IP
 const limiter = rateLimit({
-  max: 1000,
-  windowMs: 60 * 60 * 1000,
-  message: 'Too many requests from this IP, please try again in an hour!'
+  windowMs: 60 * 60 * 1000, // 1 hour window
+  max: 3000, // start blocking after 3000 requests
+  message: 'Too many requests from this IP, please try again in an hour!',
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false // Disable the `X-RateLimit-*` headers
 });
 app.use('/api', limiter);
 
