@@ -16,7 +16,7 @@ const subcategoryRouter = require('./routes/subcategoryRoutes');
 const productRouter = require('./routes/productRoutes');
 
 const app = express();
-//app.set('trust proxy', 3); // Trust first 3 proxies (for Heroku)
+app.set('trust proxy', 3); // Trust first 3 proxies (for deployment)
 
 // Development logging
 if (process.env.NODE_ENV === 'development') {
