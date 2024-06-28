@@ -34,6 +34,17 @@ const handleCastErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
+const handleMongoError = (err) => {
+  if (err.code === 16755) {
+    // custom error message for MongoError code 16755
+    const message =
+      "Invalid location coordinates: 'coordinates' array must contain numeric elements and cannot be empty.";
+    return new AppError(message, 400);
+  }
+  const message = err.message || 'An unknown error occurred.';
+  return new AppError(message, err.statusCode || 500);
+};
+
 const sendErrorDev = (err, req, res) => {
   if (req.originalUrl.startsWith('/api')) {
     // A) API
@@ -139,6 +150,9 @@ module.exports = (err, req, res, next) => {
     }
     if (error.name === 'TokenExpiresError') {
       error = handleJWTExpiresError();
+    }
+    if (error.name === 'MongoError') {
+      error = handleMongoError(error);
     }
     sendErrorProd(error, req, res);
   }

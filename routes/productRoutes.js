@@ -31,6 +31,8 @@ const {
   deleteProductValidator
 } = require('../utils/validators/productValidator');
 
+const validateLocation = require('../utils/validators/locationValidator');
+
 const authController = require('../controllers/authController');
 
 // mergeParams: allow us to access parameters on other routes
@@ -49,6 +51,7 @@ router.route('/').get(createFilterOpj, getAllProducts).post(
   addCategoryIdToBody,
 
   createProductValidator,
+  validateLocation,
 
   resizeProductImages,
   uploadImageCoverToCloudinary,
@@ -67,6 +70,7 @@ router
 
     addCategoryIdToBody,
     updateProductValidator,
+    validateLocation,
 
     resizeProductImages,
     uploadImageCoverToCloudinary,
