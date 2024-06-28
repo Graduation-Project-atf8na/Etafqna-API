@@ -55,7 +55,10 @@ const productSchema = new mongoose.Schema(
         enum: ['Point']
       },
       coordinates: [Number],
-      address: String
+      address: {
+        type: String,
+        required: [true, 'Please provide an address']
+      }
     },
     category: {
       type: mongoose.Schema.ObjectId,
