@@ -70,7 +70,6 @@ router
 
     addCategoryIdToBody,
     updateProductValidator,
-    validateLocation,
 
     resizeProductImages,
     uploadImageCoverToCloudinary,

@@ -173,11 +173,12 @@ exports.updateProductValidator = [
       const product = await Product.findById(val);
       //   console.log('product', product);
 
-      const userID = product.owner;
-      //   console.log('userID', userID);
-      //   console.log('req.user._id', req.user._id);
+      const ownerID = product.owner._id;
 
-      if (userID.toString() !== req.user.id.toString()) {
+      if (ownerID.toString() !== req.user.id.toString()) {
+        console.log('userID', ownerID);
+        console.log('req.user.id', req.user.id);
+
         return Promise.reject(
           new Error('You are not allowed to update this product!')
         );
