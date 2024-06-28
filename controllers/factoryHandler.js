@@ -60,22 +60,22 @@ exports.updateOne = (Model) =>
     const { id } = req.params;
 
     // Comment Checker
-    if (Model.modelName === 'Comment') {
-      const comment = await Model.findById(id);
+    // if (Model.modelName === 'Comment') {
+    //   const comment = await Model.findById(id);
 
-      // Check if comment exist
-      if (!comment) {
-        return next(new AppError(`No Comment for this Id: ${id}`, 404));
-      }
+    //   // Check if comment exist
+    //   if (!comment) {
+    //     return next(new AppError(`No Comment for this Id: ${id}`, 404));
+    //   }
 
-      // Check if user is the owner of the comment
-      const userID = comment.user;
-      if (userID.toString() !== req.user._id.toString()) {
-        return next(
-          new AppError('You are not allowed to Update this comment!', 403)
-        );
-      }
-    }
+    //   // Check if user is the owner of the comment
+    //   const userID = comment.user;
+    //   if (userID.toString() !== req.user._id.toString()) {
+    //     return next(
+    //       new AppError('You are not allowed to Update this comment!', 403)
+    //     );
+    //   }
+    // }
 
     const doc = await Model.findByIdAndUpdate(
       id, // id of the document to update
