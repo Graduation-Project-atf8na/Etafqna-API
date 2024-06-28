@@ -7,6 +7,10 @@ const {
   updateProduct,
   deleteProduct,
 
+  // searchByProductImage
+  uploadProductImageForSearch,
+  searchByProductImage,
+
   getFollowingProducts,
   getNearByProducts,
   addCategoryIdToBody,
@@ -35,6 +39,8 @@ const router = express.Router({ mergeParams: true });
 router.use('/following', authController.protect, getFollowingProducts);
 
 router.use('/nearby', authController.protect, getNearByProducts);
+
+router.use('/searchbyimage', uploadProductImageForSearch, searchByProductImage);
 
 router.route('/').get(createFilterOpj, getAllProducts).post(
   authController.protect,
