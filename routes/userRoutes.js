@@ -3,6 +3,8 @@ const express = require('express');
 const authController = require('../controllers/authController');
 const userController = require('../controllers/userController');
 const { updateUserValidator } = require('../utils/validators/userValidator');
+const validateLocation = require('../utils/validators/locationValidator');
+
 const {
   uploadUserImage,
   resizeImage,
@@ -38,6 +40,7 @@ router.patch(
   authController.protect,
   uploadUserImage,
   updateUserValidator,
+  validateLocation,
   resizeImage,
   uploadImageToCloudinary,
   userController.updateMe
