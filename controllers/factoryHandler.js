@@ -1,53 +1,50 @@
 // const catchAsync = require('express-async-handler');
 // const slugify = require('slugify');
+const cloudinary = require('cloudinary').v2;
 
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const ApiFeatures = require('../utils/apiFeatures');
+
+const Product = require('../models/productModel');
 // const Subcategory = require('../models/subcategoryModel');
 // const Category = require('../models/categoryModel');
 
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
+    console.log(id);
 
-    // Product Checker -> handled in validation layer
-    // if (Model.modelName === 'Product') {
-    //   //   // Get product data
-    //   const product = await Model.findById(id);
+    // before delete any user,
+    // check if the user own any product, delete products first
+    // if (Model.modelName === 'User') {
+    //   console.log('User Model');
+    //   // Check if user own products
+    //   const products = await Product.find({ owner: id }).select(
+    //     '_id imageCover images'
+    //   );
+    //   if (products.length > 0) {
+    //     products.forEach(async (product) => {
+    //       // Delete Product Image Cover
+    //       console.log(
+    //         'product image cover publicID ',
+    //         product.imageCover.public_id
+    //       );
+    //       await cloudinary.uploader.destroy(product.imageCover.public_id);
 
-    //   // Check if user is the owner of the product
-    //   const userID = product.user;
-    //   if (userID.toString() !== req.user._id.toString()) {
-    //     return next(
-    //       new AppError(
-    //         'You are not The Owner of this Product to perform This Action !',
-    //         403
-    //       )
-    //     );
+    //       // Delete Product Images
+    //       if (product.images.length > 0) {
+    //         product.images.forEach(async (image) => {
+    //           await cloudinary.uploader.destroy(image.public_id);
+    //         });
+    //       }
+    //       // Delete Product document from DB
+    //       await Product.findByIdAndDelete(product._id);
+    //     });
     //   }
     // }
 
-    // Comment Checker
-    if (Model.modelName === 'Comment') {
-      const comment = await Model.findById(id);
-
-      // Check if comment exist
-      if (!comment) {
-        return next(new AppError(`No Comment for this Id: ${id}`, 404));
-      }
-      const userID = comment.user;
-
-      // Check if user is the owner of the comment
-      if (userID.toString() !== req.user._id.toString()) {
-        return next(
-          new AppError('You are not allowed to delete this comment!', 403)
-        );
-      }
-    }
-
     const deletedDoc = await Model.findByIdAndDelete(id);
-
     if (!deletedDoc) {
       return next(new AppError(`No Document for this Id: ${id}`, 404));
     }

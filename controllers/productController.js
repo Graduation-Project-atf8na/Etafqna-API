@@ -4,6 +4,8 @@ const path = require('path');
 const sharp = require('sharp');
 const { v4: uuidv4 } = require('uuid');
 const asyncHandler = require('express-async-handler');
+const axios = require('axios');
+const FormData = require('form-data');
 
 // const pLimit = import('p-limit');
 const Subcategory = require('../models/subcategoryModel');
@@ -11,7 +13,7 @@ const AppError = require('../utils/appError');
 const factory = require('./factoryHandler');
 const catchAsync = require('../utils/catchAsync');
 const Product = require('../models/productModel');
-const { uploadMultipleImages } = require('../utils/multer');
+const { uploadMultipleImages, uploadSingleImage } = require('../utils/multer');
 const {
   cloudinaryUploadImage,
   cloudinaryDeleteImage
@@ -258,6 +260,58 @@ exports.createFilterOpj = (req, res, next) => {
   req.filterObj = filterObject;
   next();
 };
+
+// @desc    upload Product Image
+// @route   POST /api/v1/products/searchbyimage
+// @access  Public
+// 1) handle uplaoded image using multer
+exports.uploadProductImageForSearch = uploadSingleImage('file');
+
+// 2) sending image to huggingface api for classification
+exports.searchByProductImage = catchAsync(async (req, res, next) => {
+  console.log('req.file:', req.file);
+  if (!req.file) return next(new AppError('Please upload an image', 400));
+
+  const formData = new FormData();
+  formData.append('file', req.file.buffer, req.file.originalname, {
+    filename: req.file.originalname
+  });
+  console.log('Form Data:', formData);
+
+  // const filePath =
+  //   'D:/Faculty/Fourth_Year/garduation project/assets/prodcuts/product4.jpeg';
+  // const form = new FormData();
+  // form.append('file', fs.createReadStream(filePath));
+
+  // fetch api thorugh axios
+  const response = await axios.post(
+    'https://demo-89nh.onrender.com/predict',
+    formData,
+    {
+      headers: {
+        ...formData.getHeaders()
+      }
+    }
+  );
+
+  console.log(response);
+
+  // if (!response.ok) {
+  //   throw new Error(`HTTP error! Status: ${response.status}`);
+  // }
+
+  // const result = await response.json();
+  // console.log('Predicted class:', result);
+
+  // console.log(response);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      result: response.data
+    }
+  });
+});
 
 // @desc    Get list of Following Products
 // @route   GET /api/v1/products/following
