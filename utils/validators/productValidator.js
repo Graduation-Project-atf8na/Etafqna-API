@@ -122,6 +122,60 @@ exports.createProductValidator = [
         }
       )
     ),
+  check('address')
+    .notEmpty()
+    .withMessage('Product address is required')
+    .isString()
+    .custom((val, { req }) => {
+      req.body.location = {
+        type: 'Point',
+        coordinates: [req.body.lng, req.body.lat],
+        address: val.address
+      };
+      return true;
+    }),
+  check('lng')
+    .notEmpty()
+    .withMessage('Product lng is required')
+    .isNumeric()
+    .withMessage('Product lng must be a number')
+    .custom((val, { req }) => {
+      req.body.location = {
+        type: 'Point',
+        coordinates: [val, req.body.lat],
+        address: req.body.address
+      };
+      return true;
+    }),
+  check('lat')
+    .notEmpty()
+    .withMessage('Product lat is required')
+    .isNumeric()
+    .withMessage('Product lat must be a number')
+    .custom((val, { req }) => {
+      req.body.location = {
+        type: 'Point',
+        coordinates: [req.body.lng, val],
+        address: req.body.address
+      };
+      return true;
+    }),
+
+  // put coordinates and address in location object
+  //   check('location')
+  //     .notEmpty()
+  //     .withMessage('Product location is required')
+  //     .isObject()
+  //     .withMessage('Location must be an object')
+  //     .custom((val, { req }) => {
+  //       // val is the location object
+  //       req.body.location = {
+  //         type: 'Point',
+  //         coordinates: [val.long.Map(Number), val.lat.Map(Number)], // convert to number
+  //         address: val.address
+  //       };
+  //       return true;
+  //     }),
 
   //   check('user')
   //     .notEmpty()
@@ -195,8 +249,9 @@ exports.updateProductValidator = [
 
   body('category')
     .optional()
+    .notEmpty()
     .isMongoId()
-    .withMessage('Invalid ID formate')
+    .withMessage('Invalid ID format')
     // check if category exist
     .custom((categoryId) =>
       Category.findById(categoryId).then((category) => {
@@ -273,6 +328,48 @@ exports.updateProductValidator = [
         }
       )
     ),
+  check('address')
+    .optional()
+    .notEmpty()
+    .withMessage('Product address is required')
+    .isString()
+    .custom((val, { req }) => {
+      req.body.location = {
+        type: 'Point',
+        coordinates: [req.body.lng, req.body.lat],
+        address: val
+      };
+      return true;
+    }),
+  check('lng')
+    .optional()
+    .notEmpty()
+    .withMessage('Product lng is required')
+    .isNumeric()
+    .withMessage('Product lng must be a number')
+    .custom((val, { req }) => {
+      req.body.location = {
+        type: 'Point',
+        coordinates: [val, req.body.lat],
+        address: req.body.address
+      };
+      return true;
+    }),
+  check('lat')
+    .optional()
+    .notEmpty()
+    .withMessage('Product lat is required')
+    .isNumeric()
+    .withMessage('Product lat must be a number')
+    .custom((val, { req }) => {
+      req.body.location = {
+        type: 'Point',
+        coordinates: [req.body.lng, val],
+        address: req.body.address
+      };
+      return true;
+    }),
+
   validatorMiddleware
 ];
 
@@ -294,13 +391,13 @@ exports.deleteProductValidator = [
       const product = await Product.findById(val);
       //   console.log('product', product);
 
-      const userID = product.owner._id;
+      const ownerID = product.owner._id;
       // console.log('userID', userID);
       // console.log('req.user._id', req.user._id);
       // console.log('req.user.role', req.user.role);
 
       if (
-        userID.toString() !== req.user._id.toString() &&
+        ownerID.toString() !== req.user._id.toString() &&
         req.user.role !== 'admin'
       ) {
         return Promise.reject(

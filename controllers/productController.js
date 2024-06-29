@@ -235,7 +235,7 @@ exports.checkSubcategoriesBelongToCategory = catchAsync(
 // Nested Route
 
 // Post /api/v1/categories/:categoryId/subcategories
-// while creating Subcategory form Category
+// while creating Subcategory from Category
 exports.addCategoryIdToBody = (req, res, next) => {
   if (!req.body.category) req.body.category = req.params.categoryId;
   next();

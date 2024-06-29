@@ -68,7 +68,6 @@ router
     authController.restrictTo('user', 'admin'),
     handleProductImages,
 
-    addCategoryIdToBody,
     updateProductValidator,
 
     resizeProductImages,
