@@ -269,14 +269,14 @@ exports.uploadProductImageForSearch = uploadSingleImage('file');
 
 // 2) sending image to huggingface api for classification
 exports.searchByProductImage = catchAsync(async (req, res, next) => {
-  console.log('req.file:', req.file);
+  // console.log('req.file:', req.file);
   if (!req.file) return next(new AppError('Please upload an image', 400));
 
   const formData = new FormData();
   formData.append('file', req.file.buffer, req.file.originalname, {
     filename: req.file.originalname
   });
-  console.log('Form Data:', formData);
+  // console.log('Form Data:', formData);
 
   // const filePath =
   //   'D:/Faculty/Fourth_Year/garduation project/assets/prodcuts/product4.jpeg';
@@ -285,7 +285,8 @@ exports.searchByProductImage = catchAsync(async (req, res, next) => {
 
   // fetch api thorugh axios
   const response = await axios.post(
-    'https://demo-89nh.onrender.com/predict',
+    // 'https://demo-89nh.onrender.com/predict',
+    'https://class-production-639c.up.railway.app/upload/',
     formData,
     {
       headers: {
@@ -294,7 +295,7 @@ exports.searchByProductImage = catchAsync(async (req, res, next) => {
     }
   );
 
-  console.log(response);
+  // console.log(response);
 
   // if (!response.ok) {
   //   throw new Error(`HTTP error! Status: ${response.status}`);
@@ -303,7 +304,21 @@ exports.searchByProductImage = catchAsync(async (req, res, next) => {
   // const result = await response.json();
   // console.log('Predicted class:', result);
 
-  // console.log(response);
+  // console.log(response.data);
+
+  // get all lables from response
+
+  // const keywoeds = response.data.map((el) => );
+
+  // const labels = response.data.map((el) => el.label.split(/[ ,]+/));
+  // console.log('Labels:', labels);
+
+  // //make labels array of 1D
+  // const lables = labels.flat();
+  // console.log('Labels Flat :', lables);
+
+  // split every word in the label by space
+  // const lables = labels.map((el) => el.split(' '));
 
   res.status(200).json({
     status: 'success',
