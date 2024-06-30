@@ -45,6 +45,19 @@ const createSendToken = (user, statusCode, res) => {
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create(req.body);
 
+  // Send Welcome Email
+  const message = `Welcome to Etafqna! We are glad you joined us!`;
+
+  try {
+    await sendEmail({
+      email: newUser.email,
+      subject: 'Welcome to Etafqna!',
+      message
+    });
+  } catch (err) {
+    console.log(err);
+  }
+
   createSendToken(newUser, 201, res);
 });
 
