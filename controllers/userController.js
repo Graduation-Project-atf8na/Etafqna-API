@@ -1,11 +1,14 @@
+/* eslint-disable no-shadow */
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const sharp = require('sharp');
+const cloudinary = require('cloudinary').v2;
 
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const User = require('../models/userModel');
+const Product = require('../models/productModel');
 
 const { uploadSingleImage } = require('../utils/multer');
 
@@ -130,6 +133,31 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 
   if (publicId && publicId !== 'avatars/default_avatar_oc1d4h') {
     await cloudinaryDeleteImage(publicId);
+  }
+
+  // Delete all products of the user
+  const products = await Product.find({ owner: req.params.id }).select(
+    '_id imageCover images'
+  );
+  //console.log(products);
+  if (products.length > 0) {
+    products.forEach(async (product) => {
+      // Delete Product Image Cover from Cloudinary
+      const publicId = product.get('imageCover.public_id');
+      await cloudinaryDeleteImage(publicId);
+      //console.log('cover deleted');
+
+      // Delete Product Images
+      if (product.images.length > 0) {
+        product.images.forEach(async (image) => {
+          const publicId = image.get('public_id');
+          await cloudinaryDeleteImage(publicId);
+          //console.log('image deleted');
+        });
+      }
+      // Delete Product document from DB
+      await Product.findByIdAndDelete(product._id);
+    });
   }
 
   await User.findByIdAndDelete(req.params.id);
