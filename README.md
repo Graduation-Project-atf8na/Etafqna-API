@@ -12,30 +12,7 @@ Etafqna API is a RESTful web service designed to handle authentication, user man
 - **Products**: Manage products, including filtering, image upload, and location-based queries.
 - **Security**: The app is protected against XSS, NoSQL injection, and parameter pollution. It also uses rate-limiting to mitigate DDoS attacks.
 
-## Project Structure
 
-├── controllers/
-│ ├── authController.js 
-│ ├── categoryController.js 
-│ ├── productController.js 
-│ ├── subcategoryController.js 
-│ └── userController.js 
-├── routes/ 
-│ ├── authRoutes.js 
-│ ├── categoryRoutes.js 
-│ ├── productRoutes.js 
-│ ├── subcategoryRoutes.js 
-│ └── userRoutes.js 
-├── utils/ 
-│ ├── appError.js 
-│ ├── validators/ 
-│ │ ├── categoryValidator.js 
-│ │ ├── locationValidator.js 
-│ │ └── productValidator.js 
-│ └── globalErrorHandler.js 
-├── app.js 
-├── server.js 
-└── .env
 
 
 ## Endpoints
